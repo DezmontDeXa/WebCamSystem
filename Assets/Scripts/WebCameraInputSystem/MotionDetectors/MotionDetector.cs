@@ -13,6 +13,10 @@ namespace WebCameraInputSystem.MotionDetectors
         [SerializeField, ReadOnly] private float _difference = 0f;
         private float[] _background;
 
+        public bool HasMotion => _difference > _minDifference;
+        public float Difference => _difference;
+
+        public event UnityAction OnFrameProcessed;
         public event UnityAction OnMotionDetected;
 
         private void OnEnable()
@@ -48,6 +52,8 @@ namespace WebCameraInputSystem.MotionDetectors
             zoneTexture.Apply();
             if (_forDebugOrNull != null)
                 _forDebugOrNull.material.mainTexture = zoneTexture;
+
+            OnFrameProcessed?.Invoke();
         }
 
         private float[] GrayScalePixels(Color[] pixels)
@@ -58,6 +64,7 @@ namespace WebCameraInputSystem.MotionDetectors
         private float CalcDifference(float[] pixels, float[] background)
         {
             if (background == null) return 0;
+            if(pixels.Length != background.Length) return 0;
 
             var difference = 0f;
             for (var i = 0; i < background.Length; i++)

@@ -9,8 +9,10 @@ namespace WebCameraInputSystem
     {
         [SerializeField] private Vector2Int _requestedFrameSize=new Vector2Int(1920, 1080);
         [SerializeField] private int _requestedFps=30;
-        [SerializeField] private Renderer _targetRendererOrNull;
         [SerializeField] private Vector2Int _motionDetectFrameSize = new Vector2Int(192, 108);
+        [SerializeField] private int _detectionFps = 10;
+        [SerializeField] private Renderer _cameraOutput;
+        [SerializeField] private Renderer _motionFrameOutput;
         private WebCamTexture _webcamTexture;
 
         public Vector2Int MotionDetectFrameSize => _motionDetectFrameSize;
@@ -24,8 +26,8 @@ namespace WebCameraInputSystem
                 Debug.LogWarning("It is recommended to use only one Web Camera Reader on scene");
 
             _webcamTexture = new WebCamTexture(_requestedFrameSize.x, _requestedFrameSize.y, _requestedFps);
-            if (_targetRendererOrNull != null)
-                _targetRendererOrNull.material.mainTexture = _webcamTexture;
+            if (_cameraOutput != null)
+                _cameraOutput.material.mainTexture = _webcamTexture;
         }
 
         [Obsolete]
@@ -43,14 +45,18 @@ namespace WebCameraInputSystem
         [Obsolete]
         private IEnumerator Ticking()
         {
+            //float prevFrameTime = Time.deltaTime;
             while (enabled)
             {
-                yield return new WaitForSecondsRealtime(1 / _requestedFps);
+                yield return new WaitForSecondsRealtime(1f / _detectionFps);
 
                 Texture2D motionTexture = new Texture2D(_webcamTexture.width, _webcamTexture.height);
                 motionTexture.SetPixels(_webcamTexture.GetPixels());
                 TextureScaler.Scale(motionTexture, _motionDetectFrameSize.x, _motionDetectFrameSize.y, FilterMode.Point);
                 OnNewFrame?.Invoke(motionTexture);
+
+                if(_motionFrameOutput)
+                    _motionFrameOutput.material.mainTexture = motionTexture;
             }
         }
 
