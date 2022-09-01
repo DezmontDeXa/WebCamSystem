@@ -1,7 +1,7 @@
-﻿using System;
+﻿using UnityEngine.Events;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Events;
+using System;
 
 namespace WebCameraInputSystem.MotionDetectors
 {
@@ -10,7 +10,7 @@ namespace WebCameraInputSystem.MotionDetectors
         [SerializeField] protected WebCamera _webCamera;
         [SerializeField] private float _minDifference = 0.2f;
         [SerializeField] private Renderer _forDebugOrNull;
-        [SerializeField] private float _difference = 0f;
+        [SerializeField, ReadOnly] private float _difference = 0f;
         private float[] _background;
 
         public event UnityAction OnMotionDetected;
@@ -61,7 +61,7 @@ namespace WebCameraInputSystem.MotionDetectors
 
             var difference = 0f;
             for (var i = 0; i < background.Length; i++)
-                difference += MathF.Abs( MathF.Abs(background[i]) - MathF.Abs(pixels[i]));
+                difference += MathF.Abs(MathF.Abs(background[i]) - MathF.Abs(pixels[i]));
             difference /= background.Length;
             return difference;
         }

@@ -1,15 +1,13 @@
 ﻿using System.Collections;
 using UnityEngine.Events;
 using UnityEngine;
-using System.Linq;
-using System.Collections.Generic;
 using System;
 
 namespace WebCameraInputSystem
 {
     public class WebCamera : MonoBehaviour
     {
-        [SerializeField] private Vector2Int _requestedFrameSize=new Vector2Int(426, 240);
+        [SerializeField] private Vector2Int _requestedFrameSize=new Vector2Int(1920, 1080);
         [SerializeField] private int _requestedFps=30;
         [SerializeField] private Renderer _targetRendererOrNull;
         [SerializeField] private Vector2Int _motionDetectFrameSize = new Vector2Int(192, 108);
@@ -30,6 +28,7 @@ namespace WebCameraInputSystem
                 _targetRendererOrNull.material.mainTexture = _webcamTexture;
         }
 
+        [Obsolete]
         private void OnEnable()
         {
             _webcamTexture.Play();
@@ -39,16 +38,6 @@ namespace WebCameraInputSystem
         private void OnDisable()
         {
             _webcamTexture.Stop();
-        }
-
-        public void Subscribe(RectInt rect, UnityAction<Color[]> action)
-        {
-            //_subscribers.Add(new TextureRectSubscriber(rect, action));
-        }
-
-        public void UnSubscribe(UnityAction<Color[]> action)
-        {
-            //_subscribers.RemoveAll(x=>x.Action == action);
         }
 
         [Obsolete]
