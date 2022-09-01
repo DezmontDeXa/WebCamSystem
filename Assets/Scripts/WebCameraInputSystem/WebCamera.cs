@@ -1,4 +1,4 @@
-﻿using WebCameraInputSystem.Tools;
+﻿using WebCameraInputSystem.Utils;
 using System.Collections;
 using UnityEngine.Events;
 using UnityEngine;
@@ -6,10 +6,11 @@ using System;
 
 namespace WebCameraInputSystem
 {
+    [AddComponentMenu("WebCameraInputSystem/WebCamera")]
     public class WebCamera : MonoBehaviour
     {
-        [SerializeField] private Vector2Int _requestedFrameSize=new Vector2Int(1920, 1080);
-        [SerializeField] private int _requestedFps=30;
+        [SerializeField] private Vector2Int _requestedFrameSize = new Vector2Int(1920, 1080);
+        [SerializeField] private int _requestedFps = 30;
         [SerializeField] private Vector2Int _motionDetectFrameSize = new Vector2Int(192, 108);
         [SerializeField] private int _detectionFps = 10;
         [SerializeField] private Renderer _cameraOutput;
@@ -18,7 +19,7 @@ namespace WebCameraInputSystem
 
         public Vector2Int MotionDetectFrameSize => _motionDetectFrameSize;
 
-        public event UnityAction<Texture2D> OnNewFrame;
+        public event UnityAction<WebCamera, Texture2D> OnNewFrame;
 
         private void Awake()
         {
@@ -46,17 +47,20 @@ namespace WebCameraInputSystem
         [Obsolete]
         private IEnumerator Ticking()
         {
-            //float prevFrameTime = Time.deltaTime;
             while (enabled)
             {
                 yield return new WaitForSecondsRealtime(1f / _detectionFps);
 
-                Texture2D motionTexture = new Texture2D(_webcamTexture.width, _webcamTexture.height);
+                var motionTexture = new Texture2D(_webcamTexture.width, _webcamTexture.height);
                 motionTexture.SetPixels(_webcamTexture.GetPixels());
-                TextureScaler.Scale(motionTexture, _motionDetectFrameSize.x, _motionDetectFrameSize.y, FilterMode.Point);
-                OnNewFrame?.Invoke(motionTexture);
+                TextureScaler.Scale(
+                    motionTexture,
+                    _motionDetectFrameSize.x,
+                    _motionDetectFrameSize.y,
+                    FilterMode.Point);
+                OnNewFrame?.Invoke(this, motionTexture);
 
-                if(_motionFrameOutput)
+                if (_motionFrameOutput)
                     _motionFrameOutput.material.mainTexture = motionTexture;
             }
         }

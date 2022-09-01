@@ -1,22 +1,27 @@
-﻿using UnityEngine.Events;
+﻿using WebCameraInputSystem.ZoneGetters;
+using WebCameraInputSystem.Utils;
+using UnityEngine.Events;
 using System.Linq;
 using UnityEngine;
 using System;
 
-namespace WebCameraInputSystem.MotionDetectors
+namespace WebCameraInputSystem
 {
-    public abstract class MotionDetector : MonoBehaviour
+    [AddComponentMenu("WebCameraInputSystem/MotionDetector")]
+    public class MotionDetector : MonoBehaviour
     {
         [SerializeField] protected WebCamera _webCamera;
         [SerializeField] private float _minDifference = 0.2f;
-        [SerializeField] private Renderer _forDebugOrNull;
+        [SerializeField] private ZoneGetter _zoneGetter;
         [SerializeField, ReadOnly] private float _difference = 0f;
         private float[] _background;
 
         public bool HasMotion => _difference > _minDifference;
+
         public float Difference => _difference;
 
         public event UnityAction OnFrameProcessed;
+
         public event UnityAction OnMotionDetected;
 
         private void OnEnable()
@@ -29,11 +34,9 @@ namespace WebCameraInputSystem.MotionDetectors
             _webCamera.OnNewFrame -= OnNewFrame;
         }
 
-        protected abstract RectInt GetZone();
-
-        private void OnNewFrame(Texture2D motionTexture)
+        private void OnNewFrame(WebCamera camera, Texture2D motionTexture)
         {
-            var targetZone = GetZone();
+            var targetZone = _zoneGetter.GetZone(camera);
             var pixels = GetRect(motionTexture, targetZone);
             var grayscaled = GrayScalePixels(pixels);
 
@@ -44,11 +47,9 @@ namespace WebCameraInputSystem.MotionDetectors
 
             UpdateBackground(grayscaled);
 
-            Texture2D zoneTexture = new Texture2D(targetZone.width, targetZone.height);
+            var zoneTexture = new Texture2D(targetZone.width, targetZone.height);
             zoneTexture.SetPixels(pixels);
             zoneTexture.Apply();
-            if (_forDebugOrNull != null)
-                _forDebugOrNull.material.mainTexture = zoneTexture;
 
             OnFrameProcessed?.Invoke();
         }
@@ -77,6 +78,8 @@ namespace WebCameraInputSystem.MotionDetectors
                 _background = pixels;
                 return;
             }
+            if (_background.Length != pixels.Length) return;
+
             for (int i = 0; i < _background.Length; i++)
                 _background[i] = (_background[i] + pixels[i]) / 2;
         }

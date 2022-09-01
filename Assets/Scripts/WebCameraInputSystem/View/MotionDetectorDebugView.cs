@@ -5,7 +5,7 @@ using TMPro;
 namespace WebCameraInputSystem.MotionDetectors
 {
     [RequireComponent(typeof(MotionDetector))]
-    public class MotionDetectDebugView : MonoBehaviour
+    public class MotionDetectorDebugView : MonoBehaviour
     {
         [SerializeField] private Image _colorIndicatorImage;
         [SerializeField] private Color _motionColor;

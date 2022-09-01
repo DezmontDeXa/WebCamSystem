@@ -1,30 +1,12 @@
-using WebCameraInputSystem.MotionDetectors;
 using UnityEngine.EventSystems;
 using UnityEngine;
 
 namespace WebCameraInputSystem.MotionProcessors
 {
-    [RequireComponent(typeof(MotionDetector))]
-    public class RaycastMotionProcessor : MonoBehaviour
+    [AddComponentMenu("WebCameraInputSystem/Processors/Raycast Motion Processor")]
+    public class RaycastMotionProcessor : MotionProcessor
     {
-        private MotionDetector _motionDetector;
-
-        private void Awake()
-        {
-            _motionDetector = GetComponent<MotionDetector>();
-        }
-
-        private void OnEnable()
-        {
-            _motionDetector.OnMotionDetected += OnMotionDetected;
-        }
-
-        private void OnDisable()
-        {
-            _motionDetector.OnMotionDetected -= OnMotionDetected;
-        }
-
-        private void OnMotionDetected()
+        protected override void OnDetect()
         {
             var screenPoint = Camera.main.WorldToScreenPoint(transform.position);
 

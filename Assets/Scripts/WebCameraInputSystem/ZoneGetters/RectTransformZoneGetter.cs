@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 
-namespace WebCameraInputSystem.MotionDetectors
+namespace WebCameraInputSystem.ZoneGetters
 {
+    [AddComponentMenu("WebCameraInputSystem/Zone Getters/From RectTransform")]
     [RequireComponent(typeof(RectTransform))]
-    public class RectTransformMotionDetector : MotionDetector
+    public class RectTransformZoneGetter : ZoneGetter
     {
         private RectTransform _rectTransform;
         private RectTransform _canvasRectTransform;
@@ -14,12 +15,12 @@ namespace WebCameraInputSystem.MotionDetectors
             _canvasRectTransform = GetComponentInParent<Canvas>().GetComponent<RectTransform>();
         }
 
-        protected override RectInt GetZone()
+        public override RectInt GetZone(WebCamera camera)
         {
             var bounds = GetRectTransformBounds(_rectTransform);
             var canvasBounds = GetRectTransformBounds(_canvasRectTransform);
 
-            var frameSize = _webCamera.MotionDetectFrameSize;
+            var frameSize = camera.MotionDetectFrameSize;
 
             var xMod = frameSize.x / canvasBounds.size.x;
             var yMod = frameSize.y / canvasBounds.size.y;
@@ -32,15 +33,13 @@ namespace WebCameraInputSystem.MotionDetectors
             return new RectInt((int)x, (int)y, (int)width, (int)height);
         }
 
-        public static Bounds GetRectTransformBounds(RectTransform transform)
+        private static Bounds GetRectTransformBounds(RectTransform transform)
         {
-            Vector3[] WorldCorners = new Vector3[4];
+            var WorldCorners = new Vector3[4];
             transform.GetWorldCorners(WorldCorners);
-            Bounds bounds = new Bounds(WorldCorners[0], Vector3.zero);
+            var bounds = new Bounds(WorldCorners[0], Vector3.zero);
             for (int i = 1; i < 4; ++i)
-            {
                 bounds.Encapsulate(WorldCorners[i]);
-            }
             return bounds;
         }
     }
