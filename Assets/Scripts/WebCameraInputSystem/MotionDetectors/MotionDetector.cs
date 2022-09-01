@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace WebCameraInputSystem.MotionDetectors
 {
@@ -11,6 +12,8 @@ namespace WebCameraInputSystem.MotionDetectors
         [SerializeField] private Renderer _forDebugOrNull;
         [SerializeField] private float _difference = 0f;
         private float[] _background;
+
+        public event UnityAction OnMotionDetected;
 
         private void OnEnable()
         {
@@ -25,6 +28,8 @@ namespace WebCameraInputSystem.MotionDetectors
             _webCamera.OnNewFrame -= OnNewFrame;
         }
 
+        protected abstract RectInt GetZone();
+
         private void OnNewFrame(Texture2D motionTexture)
         {
             var targetZone = GetZone();
@@ -32,6 +37,9 @@ namespace WebCameraInputSystem.MotionDetectors
             var grayscaled = GrayScalePixels(pixels);
 
             _difference = CalcDifference(grayscaled, _background);
+
+            if (_difference > _minDifference)
+                OnMotionDetected?.Invoke();
 
             UpdateBackground(grayscaled);
 
@@ -57,6 +65,7 @@ namespace WebCameraInputSystem.MotionDetectors
             difference /= background.Length;
             return difference;
         }
+
         private void UpdateBackground(float[] pixels)
         {
             if (_background == null)
@@ -67,8 +76,6 @@ namespace WebCameraInputSystem.MotionDetectors
             for (int i = 0; i < _background.Length; i++)
                 _background[i] = (_background[i] + pixels[i]) / 2;
         }
-
-        protected abstract RectInt GetZone();
 
         private Color[] GetRect(Texture2D motionTexture, RectInt rect)
         {
