@@ -1,5 +1,4 @@
-﻿using WebCameraInputSystem.MotionDetectors;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace WebCameraInputSystem.MotionProcessors
 {
@@ -14,19 +13,40 @@ namespace WebCameraInputSystem.MotionProcessors
 
         private void OnEnable()
         {
-            _motionDetector.OnMotionDetected += OnMotionDetected;
+            _motionDetector.OnFrameProcessed += OnFrameProcessed;
         }
 
         private void OnDisable()
         {
-            _motionDetector.OnMotionDetected -= OnMotionDetected;
+            _motionDetector.OnFrameProcessed -= OnFrameProcessed;
         }
 
-        private void OnMotionDetected()
+        private void OnFrameProcessed(MotionDetector detector, float difference)
         {
-            OnDetect();
+            if (detector.HasMotion) 
+                OnDetect(detector, difference);
+            else
+                OnUnDetect(detector, difference);
         }
 
-        protected abstract void OnDetect();
+        private void OnDetect(MotionDetector detector, float difference)
+        {
+            AfterOnDetect(detector, difference);
+        }
+
+        private void OnUnDetect(MotionDetector detector, float difference)
+        {
+            AfterOnUnDetect(detector, difference);
+        }
+
+        protected virtual void AfterOnDetect(MotionDetector detector, float difference)
+        {
+
+        }
+
+        protected virtual void AfterOnUnDetect(MotionDetector detector, float difference)
+        {
+
+        }
     }
 }

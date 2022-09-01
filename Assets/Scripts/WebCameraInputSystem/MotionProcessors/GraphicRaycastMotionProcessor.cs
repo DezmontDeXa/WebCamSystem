@@ -1,7 +1,7 @@
-﻿using UnityEngine.EventSystems;
-using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine;
 
 namespace WebCameraInputSystem.MotionProcessors
 {
@@ -9,7 +9,8 @@ namespace WebCameraInputSystem.MotionProcessors
     public class GraphicRaycastMotionProcessor : MotionProcessor
     {
         [SerializeField] private GraphicRaycaster _graphicRaycaster;
-        protected override void OnDetect()
+
+        protected override void AfterOnDetect(MotionDetector detector, float difference)
         {
             var eventData = new PointerEventData(EventSystem.current);
             eventData.position = transform.position;// Camera.main.WorldToScreenPoint(transform.position);

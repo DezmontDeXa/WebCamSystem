@@ -20,9 +20,9 @@ namespace WebCameraInputSystem
 
         public float Difference => _difference;
 
-        public event UnityAction OnFrameProcessed;
+        public event UnityAction<MotionDetector, float> OnFrameProcessed;
 
-        public event UnityAction OnMotionDetected;
+        public event UnityAction<MotionDetector, float> OnMotionDetected;
 
         private void OnEnable()
         {
@@ -43,7 +43,7 @@ namespace WebCameraInputSystem
             _difference = CalcDifference(grayscaled, _background);
 
             if (_difference > _minDifference)
-                OnMotionDetected?.Invoke();
+                OnMotionDetected?.Invoke(this, _difference);
 
             UpdateBackground(grayscaled);
 
@@ -51,7 +51,7 @@ namespace WebCameraInputSystem
             zoneTexture.SetPixels(pixels);
             zoneTexture.Apply();
 
-            OnFrameProcessed?.Invoke();
+            OnFrameProcessed?.Invoke(this, _difference);
         }
 
         private float[] GrayScalePixels(Color[] pixels)
