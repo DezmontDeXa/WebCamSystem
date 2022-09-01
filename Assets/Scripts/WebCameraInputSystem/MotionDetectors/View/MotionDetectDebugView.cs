@@ -1,6 +1,6 @@
-using TMPro;
-using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine;
+using TMPro;
 
 namespace WebCameraInputSystem.MotionDetectors
 {
@@ -16,7 +16,16 @@ namespace WebCameraInputSystem.MotionDetectors
         private void Awake()
         {
             _motionDetector = GetComponent<MotionDetector>();
+        }
+
+        private void OnEnable()
+        {
             _motionDetector.OnFrameProcessed += OnFrameProcessed;
+        }
+
+        private void OnDisable()
+        {
+            _motionDetector.OnFrameProcessed -= OnFrameProcessed;
         }
 
         private void OnFrameProcessed()

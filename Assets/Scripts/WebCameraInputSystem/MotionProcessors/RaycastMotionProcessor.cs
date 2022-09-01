@@ -1,6 +1,6 @@
-using UnityEngine;
-using UnityEngine.EventSystems;
 using WebCameraInputSystem.MotionDetectors;
+using UnityEngine.EventSystems;
+using UnityEngine;
 
 namespace WebCameraInputSystem.MotionProcessors
 {
@@ -28,14 +28,13 @@ namespace WebCameraInputSystem.MotionProcessors
         {
             var screenPoint = Camera.main.WorldToScreenPoint(transform.position);
 
-            Ray ray = Camera.main.ScreenPointToRay(screenPoint);
-            Debug.DrawRay(ray.origin, ray.direction * 100, Color.red, 10);
+            var ray = Camera.main.ScreenPointToRay(screenPoint);
 
             if (Physics.Raycast(ray, out var hit))
             {
                 var clickHandler = hit.collider.gameObject.GetComponent<IPointerClickHandler>();
                 clickHandler.OnPointerClick(new PointerEventData(EventSystem.current));
             }
-        }    
+        }
     }
 }

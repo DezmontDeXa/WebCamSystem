@@ -21,14 +21,11 @@ namespace WebCameraInputSystem.MotionDetectors
 
         private void OnEnable()
         {
-            //_targetZone = GetZone();
-            //_webCamera.Subscribe(_targetZone, OnNewFrame);
             _webCamera.OnNewFrame += OnNewFrame;
         }
 
         private void OnDisable()
         {
-            //_webCamera.UnSubscribe(OnNewFrame);
             _webCamera.OnNewFrame -= OnNewFrame;
         }
 
