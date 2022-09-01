@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace WebCameraInputSystem
+namespace WebCameraInputSystem.Tools
 {
     public static class TextureScaler
     {
