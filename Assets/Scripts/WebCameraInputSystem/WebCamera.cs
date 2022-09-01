@@ -60,17 +60,8 @@ namespace WebCameraInputSystem
 
                 Texture2D motionTexture = new Texture2D(_webcamTexture.width, _webcamTexture.height);
                 motionTexture.SetPixels(_webcamTexture.GetPixels());
-                TextureScaler.scale(motionTexture, _motionDetectFrameSize.x, _motionDetectFrameSize.y, FilterMode.Point);
-
-                //var pixels = motionTexture.GetPixels();
-
+                TextureScaler.Scale(motionTexture, _motionDetectFrameSize.x, _motionDetectFrameSize.y, FilterMode.Point);
                 OnNewFrame?.Invoke(motionTexture);
-                //foreach (var subscriber in _subscribers.ToList())
-                //{
-                //    var colors = GetRect(motionTexture, subscriber.TargetRect);
-                //    //subscriber.Action.BeginInvoke(colors, null, null);
-                //    subscriber.Action.Invoke(colors);
-                //}
             }
         }
 
