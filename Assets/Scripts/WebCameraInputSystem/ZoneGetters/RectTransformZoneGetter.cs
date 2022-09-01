@@ -15,7 +15,7 @@ namespace WebCameraInputSystem.ZoneGetters
             _canvasRectTransform = GetComponentInParent<Canvas>().GetComponent<RectTransform>();
         }
 
-        public override RectInt GetZone(WebCamera camera)
+        protected override RectInt GetZonePerform(WebCamera camera)
         {
             var bounds = GetRectTransformBounds(_rectTransform);
             var canvasBounds = GetRectTransformBounds(_canvasRectTransform);

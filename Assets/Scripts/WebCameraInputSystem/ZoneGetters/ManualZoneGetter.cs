@@ -7,6 +7,6 @@ namespace WebCameraInputSystem.ZoneGetters
     {
         [SerializeField] private RectInt _zone;
 
-        public override RectInt GetZone(WebCamera camera) => _zone;
+        protected override RectInt GetZonePerform(WebCamera camera) => _zone;
     }
 }

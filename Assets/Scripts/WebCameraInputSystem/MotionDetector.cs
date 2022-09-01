@@ -36,22 +36,28 @@ namespace WebCameraInputSystem
 
         private void OnNewFrame(WebCamera camera, Texture2D motionTexture)
         {
-            var targetZone = _zoneGetter.GetZone(camera);
-            var pixels = GetRect(motionTexture, targetZone);
-            var grayscaled = GrayScalePixels(pixels);
+            try
+            {
+                var targetZone = _zoneGetter.GetZone(camera);
+                var pixels = GetRect(motionTexture, targetZone);
+                var grayscaled = GrayScalePixels(pixels);
 
-            _difference = CalcDifference(grayscaled, _background);
+                _difference = CalcDifference(grayscaled, _background);
 
-            if (_difference > _minDifference)
-                OnMotionDetected?.Invoke(this, _difference);
+                if (_difference > _minDifference)
+                    OnMotionDetected?.Invoke(this, _difference);
 
-            UpdateBackground(grayscaled);
+                UpdateBackground(grayscaled);
 
-            var zoneTexture = new Texture2D(targetZone.width, targetZone.height);
-            zoneTexture.SetPixels(pixels);
-            zoneTexture.Apply();
+                var zoneTexture = new Texture2D(targetZone.width, targetZone.height);
+                zoneTexture.SetPixels(pixels);
+                zoneTexture.Apply();
 
-            OnFrameProcessed?.Invoke(this, _difference);
+                OnFrameProcessed?.Invoke(this, _difference);
+            }catch(Exception ex)
+            {
+                Debug.LogException(ex);
+            }
         }
 
         private float[] GrayScalePixels(Color[] pixels)
