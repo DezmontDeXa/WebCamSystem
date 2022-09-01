@@ -101,7 +101,7 @@ public class FPSCounter : MonoBehaviour
 
         FPSPeriod = Time.realtimeSinceStartup + FPSMeasurePeriod;
 
-        advancedTransform.gameObject.SetActive(useAdvanced);
+        advancedTransform?.gameObject.SetActive(useAdvanced);
     }
 
     private void Update()
