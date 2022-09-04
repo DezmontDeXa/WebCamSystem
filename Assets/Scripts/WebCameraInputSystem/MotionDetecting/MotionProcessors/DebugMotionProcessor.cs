@@ -2,7 +2,7 @@ using UnityEngine.UI;
 using UnityEngine;
 using TMPro;
 
-namespace WebCameraInputSystem.MotionProcessors
+namespace WebCameraInputSystem.MotionDetecting.MotionProcessors
 {
     [AddComponentMenu("WebCameraInputSystem/Processors/Debug Motion Processor")]
     public class DebugMotionProcessor : MotionProcessor

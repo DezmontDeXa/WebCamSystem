@@ -1,7 +1,7 @@
 ﻿using UnityEngine.Events;
 using UnityEngine;
 
-namespace WebCameraInputSystem.MotionProcessors
+namespace WebCameraInputSystem.MotionDetecting.MotionProcessors
 {
     [AddComponentMenu("WebCameraInputSystem/Processors/Event Motion Processor")]
     public class EventMotionProcessor : MotionProcessor

@@ -4,7 +4,7 @@ using UnityEngine.Events;
 using UnityEngine;
 using System;
 
-namespace WebCameraInputSystem
+namespace WebCameraInputSystem.MotionDetecting
 {
     [AddComponentMenu("WebCameraInputSystem/MotionDetector")]
     public class MotionDetector : MonoBehaviour
@@ -74,12 +74,6 @@ namespace WebCameraInputSystem
                 //_background[i] = MathF.Round(Alg.SquareMediateValue(_background[i], pixels[i]), 3);
                 _background[i] = MathF.Round(Alg.MediateValue(_background[i], pixels[i]), 3);
         }
-        
-    }
 
-    public enum DetectMode
-    {
-        Continious,
-        Discrete
     }
 }

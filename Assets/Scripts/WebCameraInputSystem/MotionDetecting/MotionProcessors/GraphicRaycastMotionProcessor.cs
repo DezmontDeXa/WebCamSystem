@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine;
 
-namespace WebCameraInputSystem.MotionProcessors
+namespace WebCameraInputSystem.MotionDetecting.MotionProcessors
 {
     [AddComponentMenu("WebCameraInputSystem/Processors/Graphic Raycast Motion Processor")]
     public class GraphicRaycastMotionProcessor : MotionProcessor
