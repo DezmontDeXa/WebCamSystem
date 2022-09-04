@@ -1,7 +1,6 @@
 ﻿using WebCameraInputSystem.ZoneGetters;
 using WebCameraInputSystem.Utils;
 using UnityEngine.Events;
-using System.Linq;
 using UnityEngine;
 using System;
 
@@ -72,14 +71,10 @@ namespace WebCameraInputSystem
             if (_background.Length != pixels.Length) return;
 
             for (var i = 0; i < _background.Length; i++)
-                //_background[i] = MathF.Round((_background[i] + pixels[i]) / 2, 3);
-                _background[i] = MathF.Round(SquareMediateValue(_background[i], pixels[i]), 3);
+                //_background[i] = MathF.Round(Alg.SquareMediateValue(_background[i], pixels[i]), 3);
+                _background[i] = MathF.Round(Alg.MediateValue(_background[i], pixels[i]), 3);
         }
-
-        private float SquareMediateValue(params float[] values)
-        {
-            return MathF.Sqrt(values.Sum(x => MathF.Pow(x, 2)) / values.Length);
-        }
+        
     }
 
     public enum DetectMode

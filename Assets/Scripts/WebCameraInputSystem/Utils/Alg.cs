@@ -1,5 +1,6 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
+using System.Linq;
+using System;
 
 namespace WebCameraInputSystem.Utils
 {
@@ -62,6 +63,16 @@ namespace WebCameraInputSystem.Utils
                 byteIndex += 4;
             }
             return result;
+        }
+
+        public static float SquareMediateValue(params float[] values)
+        {
+            return MathF.Sqrt(values.Sum(x => MathF.Pow(x, 2)) / values.Length);
+        }
+
+        public static float MediateValue(params float[] values)
+        {
+            return values.Sum() / values.Length;
         }
     }
 }

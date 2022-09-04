@@ -9,14 +9,14 @@ namespace WebCameraInputSystem
     {
         [SerializeField] private Vector2Int _requestedFrameSize = new Vector2Int(1920, 1080);
         [SerializeField] private int _requestedFps = 30;
-        [SerializeField] private Vector2Int _motionDetectFrameSize = new Vector2Int(192, 108);
-        [SerializeField] private int _detectionFps = 10;
+        [SerializeField] private Vector2Int _detectFrameSize = new Vector2Int(192, 108);
+        [SerializeField] private int _detectFps = 10;
         [SerializeField] private bool _flipY = true;
         private float _prevTime = 0;
 
         public WebCamTexture WebCamTexture { get; private set; }
         public Texture2D MotionTexture { get; private set; }
-        public Vector2Int MotionDetectFrameSize => _motionDetectFrameSize;
+        public Vector2Int MotionDetectFrameSize => _detectFrameSize;
 
         public event UnityAction<WebCamera> OnNewFrame;
 
@@ -26,7 +26,7 @@ namespace WebCameraInputSystem
             if (cams.Length > 1)
                 Debug.LogWarning("It is recommended to use only one Web Camera Reader on scene");
             WebCamTexture = new WebCamTexture(_requestedFrameSize.x, _requestedFrameSize.y, _requestedFps);
-            MotionTexture = new Texture2D(_motionDetectFrameSize.x, _motionDetectFrameSize.y);
+            MotionTexture = new Texture2D(_detectFrameSize.x, _detectFrameSize.y);
         }
 
         private void OnEnable()
@@ -44,7 +44,7 @@ namespace WebCameraInputSystem
         {
             if (!WebCamTexture.isPlaying) return;
             if (!WebCamTexture.didUpdateThisFrame) return;
-            if (Time.timeSinceLevelLoad - _prevTime < 1f / _detectionFps) return;
+            if (Time.timeSinceLevelLoad - _prevTime < 1f / _detectFps) return;
             _prevTime = Time.timeSinceLevelLoad;
             PerformFrame();
         }
