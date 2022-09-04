@@ -11,120 +11,52 @@ namespace WebCameraInputSystem
     public class MotionDetector : MonoBehaviour
     {
         [SerializeField] protected WebCamera _webCamera;
-        [SerializeField] private float _minDifference = 0.2f;
+        [SerializeField] private float _minDifference = 0.05f;
         [SerializeField] private ZoneGetter _zoneGetter;
         [SerializeField, ReadOnly] private float _difference = 0f;
+        [SerializeField] private DetectMode _detectMode;
         private float[] _background;
 
         public bool HasMotion => _difference > _minDifference;
 
         public float Difference => _difference;
 
-        public event UnityAction<MotionDetector, float> OnFrameProcessed;
+        public event UnityAction<WebCamera, MotionDetector, float> OnFrameProcessed;
 
         public event UnityAction<MotionDetector, float> OnMotionDetected;
 
         private void OnEnable()
         {
-            _webCamera.OnNewFrame += OnNewFrameOptimized;
+            _webCamera.OnNewFrame += OnNewFrame;
         }
 
         private void OnDisable()
         {
-            _webCamera.OnNewFrame -= OnNewFrameOptimized;
-        }
-
-        private void OnNewFrameOptimized(WebCamera camera)
-        {
-            var targetZone = _zoneGetter.GetZone(camera);
-            var bytes = camera.MotionTexture.GetRawTextureData();
-            var bytesOfZone = Crop(bytes, camera.MotionDetectFrameSize, targetZone);
-            var grayscaled = GetGrayScale(bytesOfZone);
-
-            _difference = CalcDifference(grayscaled, _background);
-
-            if (_difference > _minDifference)
-                OnMotionDetected?.Invoke(this, _difference);
-
-            UpdateBackground(grayscaled);
-
-            OnFrameProcessed?.Invoke(this, _difference);
-        }
-
-        private float[] GetGrayScale(byte[] bytes)
-        {
-            var result = new float[bytes.Length / 4];
-            // .3f .59f .11f
-            int byteIndex = 0;
-            for (int pixel = 0; pixel < result.Length; pixel++)
-            {
-                float rawValue =
-                    ((1f / 255f * bytes[byteIndex + 0]) * 0.3f) +
-                    ((1f / 255f * bytes[byteIndex + 1]) * 0.59f) +
-                    ((1f / 255f * bytes[byteIndex + 2]) * 0.11f);
-
-                result[pixel] = MathF.Round( rawValue, 2);
-                byteIndex += 4;
-            }
-            return result;
-        }
-
-        private byte[] Crop(byte[] bytes, Vector2Int textureSize, RectInt targetZone)
-        {
-            byte[] result = new byte[targetZone.width * targetZone.height * 4];
-
-            for (int lineIndex = 0; lineIndex < targetZone.y; lineIndex++)
-            {
-                int firstIndex = (textureSize.x * (targetZone.y + lineIndex) + targetZone.x) * 4;
-                int lineLenght = targetZone.width * 4;
-                for (int i = 0; i < lineLenght; i++)
-                    result[i] = bytes[firstIndex + i];
-            }
-            return result;
+            _webCamera.OnNewFrame -= OnNewFrame;
         }
 
         private void OnNewFrame(WebCamera camera)
         {
-            try
-            {
-                var targetZone = _zoneGetter.GetZone(camera);
-                var pixels = GetRect(camera.MotionTexture, targetZone);
-                var grayscaled = GrayScalePixels(pixels);
+            var targetZone = _zoneGetter.GetZone(camera);
+            var bytes = camera.MotionTexture.GetRawTextureData();
+            var bytesOfZone = Alg.CropByBytes(bytes, camera.MotionDetectFrameSize, targetZone);
+            var grayscaled = Alg.GetGrayScale(bytesOfZone);
 
-                _difference = CalcDifference(grayscaled, _background);
-
-                if (_difference > _minDifference)
-                    OnMotionDetected?.Invoke(this, _difference);
-
-                UpdateBackground(grayscaled);
-
-                var zoneTexture = new Texture2D(targetZone.width, targetZone.height);
-                zoneTexture.SetPixels(pixels);
-                zoneTexture.Apply();
-
-                OnFrameProcessed?.Invoke(this, _difference);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogException(ex);
-            }
+            var prevFrameHasMotion = HasMotion;
+            _difference = Alg.CalcDifference(grayscaled, _background);
+            InvokeIfNeeded(prevFrameHasMotion, _difference, _minDifference, _detectMode);
+            UpdateBackground(grayscaled);
+            OnFrameProcessed?.Invoke(camera, this, _difference);
         }
 
-        private float[] GrayScalePixels(Color[] pixels)
+        private void InvokeIfNeeded(bool prevFrameHasMotion, float difference, float minDifference, DetectMode detectMode)
         {
-            return pixels.Select(x => x.grayscale).ToArray();
-        }
-
-        private float CalcDifference(float[] pixels, float[] background)
-        {
-            if (background == null) return 0;
-            if (pixels.Length != background.Length) return 0;
-
-            var difference = 0f;
-            for (var i = 0; i < background.Length; i++)
-                difference += MathF.Abs(MathF.Abs(background[i]) - MathF.Abs(pixels[i]));
-            difference /= background.Length;
-            return difference;
+            if (difference < minDifference) return;
+            if (!prevFrameHasMotion)
+                OnMotionDetected?.Invoke(this, difference);
+            else
+            if (detectMode == DetectMode.Continious)
+                OnMotionDetected?.Invoke(this, difference);
         }
 
         private void UpdateBackground(float[] pixels)
@@ -136,13 +68,20 @@ namespace WebCameraInputSystem
             }
             if (_background.Length != pixels.Length) return;
 
-            for (int i = 0; i < _background.Length; i++)
-                _background[i] = MathF.Round( (_background[i] + pixels[i]) / 2, 2);
+            for (var i = 0; i < _background.Length; i++)
+                //_background[i] = MathF.Round((_background[i] + pixels[i]) / 2, 3);
+                _background[i] = MathF.Round(SquareMediateValue(_background[i], pixels[i]), 3);
         }
 
-        private Color[] GetRect(Texture2D motionTexture, RectInt rect)
+        private float SquareMediateValue(params float[] values)
         {
-            return motionTexture.GetPixels(rect.x, rect.y, rect.width, rect.height);
+            return MathF.Sqrt(values.Sum(x => MathF.Pow(x, 2)) / values.Length);
         }
+    }
+
+    public enum DetectMode
+    {
+        Continious,
+        Discrete
     }
 }

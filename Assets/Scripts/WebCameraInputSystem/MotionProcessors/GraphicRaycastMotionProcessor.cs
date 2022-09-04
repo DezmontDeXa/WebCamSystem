@@ -10,7 +10,7 @@ namespace WebCameraInputSystem.MotionProcessors
     {
         [SerializeField] private GraphicRaycaster _graphicRaycaster;
 
-        protected override void AfterOnDetect(MotionDetector detector, float difference)
+        protected override void OnDetect(WebCamera camera, MotionDetector detector, float difference)
         {
             var eventData = new PointerEventData(EventSystem.current);
             eventData.position = transform.position;// Camera.main.WorldToScreenPoint(transform.position);

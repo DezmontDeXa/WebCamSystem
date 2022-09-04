@@ -1,10 +1,9 @@
-﻿using WebCameraInputSystem.Utils;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace WebCameraInputSystem
 {
     [RequireComponent(typeof(WebCamera))]
-    public class WebCameraView : MonoBehaviour
+    public class WebCameraRenderer : MonoBehaviour
     {
         [SerializeField] private Renderer _renderer;
         private WebCamera _camera;
