@@ -21,6 +21,9 @@ namespace WebCameraInputSystem
 
         public float Difference => _difference;
 
+        public ZoneGetter ZoneGetter => _zoneGetter;
+
+
         public event UnityAction<WebCamera, MotionDetector, float> OnFrameProcessed;
 
         public event UnityAction<MotionDetector, float> OnMotionDetected;
