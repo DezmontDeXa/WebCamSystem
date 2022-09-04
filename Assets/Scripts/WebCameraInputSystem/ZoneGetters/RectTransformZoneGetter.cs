@@ -15,22 +15,20 @@ namespace WebCameraInputSystem.ZoneGetters
             _canvasRectTransform = GetComponentInParent<Canvas>().GetComponent<RectTransform>();
         }
 
-        protected override RectInt GetZonePerform(WebCamera camera)
+        protected override RectInt GetZonePerform(WebCamera camera, Vector2Int originalFrameSize)
         {
             var bounds = GetRectTransformBounds(_rectTransform);
             var canvasBounds = GetRectTransformBounds(_canvasRectTransform);
 
-            var frameSize = camera.MotionDetectFrameSize;
-
-            var xMod = frameSize.x / canvasBounds.size.x;
-            var yMod = frameSize.y / canvasBounds.size.y;
+            var xMod = originalFrameSize.x / canvasBounds.size.x;
+            var yMod = originalFrameSize.y / canvasBounds.size.y;
 
             var x = (bounds.center.x - bounds.extents.x) * xMod;
             var y = (bounds.center.y - bounds.extents.y) * yMod;
             var width = bounds.size.x * xMod;
             var height = bounds.size.y * yMod;
 
-            return new RectInt((int)x, (int)y, (int)width, (int)height);
+           return new RectInt((int)x, (int)y, (int)width, (int)height);
         }
 
         private static Bounds GetRectTransformBounds(RectTransform transform)

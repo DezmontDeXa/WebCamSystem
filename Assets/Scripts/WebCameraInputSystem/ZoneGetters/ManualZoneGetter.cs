@@ -5,8 +5,14 @@ namespace WebCameraInputSystem.ZoneGetters
     [AddComponentMenu("WebCameraInputSystem/Zone Getters/Manual")]
     public class ManualZoneGetter : ZoneGetter
     {
-        [SerializeField] private RectInt _zone;
+        [SerializeField] private Rect _zone = new Rect(0,0,1,1);
 
-        protected override RectInt GetZonePerform(WebCamera camera) => _zone;
+        protected override RectInt GetZonePerform(WebCamera camera, Vector2Int originalFrameSize)
+        {
+            if(_zone.width==0 ||_zone.height==0 || _zone.x<0 || _zone.y<0)
+                throw new System.Exception($"{gameObject.name}.ManualZoneGetter: Invalide zone parameters");
+
+            return new RectInt((int)_zone.x, (int)_zone.y, (int)(originalFrameSize.x * _zone.width), (int)(originalFrameSize.y * _zone.height));
+        }
     }
 }

@@ -4,14 +4,13 @@ namespace WebCameraInputSystem.ZoneGetters
 {
     public abstract class ZoneGetter : MonoBehaviour, IZoneGetter
     {
-        // Create base realisation with bounding zone in camera bounds (Failed if rect out of screen)
-        public RectInt GetZone(WebCamera camera)
+        public RectInt GetZone(WebCamera camera, Vector2Int originalFrameSize)
         {
-            var result = GetZonePerform(camera);
-            result.ClampToBounds(new RectInt(0, 0, camera.MotionDetectFrameSize.x, camera.MotionDetectFrameSize.y));
+            var result = GetZonePerform(camera, originalFrameSize);
+            result.ClampToBounds(new RectInt(0, 0, originalFrameSize.x, originalFrameSize.y));
             return result;
         }
 
-        protected abstract RectInt GetZonePerform(WebCamera camera);
+        protected abstract RectInt GetZonePerform(WebCamera camera, Vector2Int originalFrameSize);
     }
 }

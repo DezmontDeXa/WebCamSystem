@@ -39,7 +39,7 @@ namespace WebCameraInputSystem.MotionDetecting
 
         private void OnNewFrame(WebCamera camera)
         {
-            var targetZone = _zoneGetter.GetZone(camera);
+            var targetZone = _zoneGetter.GetZone(camera, camera.MotionDetectFrameSize);
             var bytes = camera.MotionTexture.GetRawTextureData();
             var bytesOfZone = Alg.CropByBytes(bytes, camera.MotionDetectFrameSize, targetZone);
             var grayscaled = Alg.GetGrayScale(bytesOfZone);
