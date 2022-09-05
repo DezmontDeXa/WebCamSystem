@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace WebCameraInputSystem.MotionDetection.Zone.MotionProcessors
+namespace WebCameraInputSystem.MotionDetection.MotionProcessors
 {
     public abstract class MotionProcessor : MonoBehaviour
     {

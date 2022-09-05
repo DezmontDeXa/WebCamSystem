@@ -1,26 +1,26 @@
-﻿using WebCameraInputSystem.ZoneGetters;
+﻿using WebCameraInputSystem.MotionDetecting;
+using WebCameraInputSystem.ZoneGetters;
 using WebCameraInputSystem.Utils;
 using UnityEngine.Events;
 using UnityEngine;
 using System;
 
-namespace WebCameraInputSystem.MotionDetection.Zone
+namespace WebCameraInputSystem.MotionDetection
 {
-    [AddComponentMenu("WebCamera InputSystem/Motions/Zone/Zone Motion Detector")]
+    [AddComponentMenu("WebCamera InputSystem/Motions/Zone Motion Detector")]
     public class ZoneMotionDetector : MonoBehaviour
     {
         [SerializeField] protected WebCamera _webCamera;
-        [SerializeField] private float _minDifference = 0.05f;
+        [SerializeField] private float _minDifference = 0.02f;
         [SerializeField] private ZoneGetter _zoneGetter;
-        [SerializeField, ReadOnly] private float _difference = 0f;
         [SerializeField] private DetectMode _detectMode;
+        [SerializeField] private UpdateBackgroundMode _updateBackgroundMode;
+        [SerializeField, ReadOnly] private float _difference = 0f;
         private float[] _background;
 
         public bool HasMotion => _difference > _minDifference;
 
         public float Difference => _difference;
-
-        public ZoneGetter ZoneGetter => _zoneGetter;
 
         public event UnityAction<ZoneMotionDetector, float> OnFrameProcessed;
 
@@ -71,9 +71,17 @@ namespace WebCameraInputSystem.MotionDetection.Zone
             if (_background.Length != pixels.Length) return;
 
             for (var i = 0; i < _background.Length; i++)
-                _background[i] = MathF.Round(Alg.SquareMediateValue(_background[i], pixels[i]), 3);
-                //_background[i] = MathF.Round(Alg.MediateValue(_background[i], pixels[i]), 3);
+            {
+                switch (_updateBackgroundMode)
+                {
+                    case UpdateBackgroundMode.Linear:
+                        _background[i] = MathF.Round(Alg.MediateValue(_background[i], pixels[i]), 3);
+                        break;
+                    case UpdateBackgroundMode.Squart:
+                        _background[i] = MathF.Round(Alg.SquareMediateValue(_background[i], pixels[i]), 3);
+                        break;
+                }
+            }
         }
-
     }
 }

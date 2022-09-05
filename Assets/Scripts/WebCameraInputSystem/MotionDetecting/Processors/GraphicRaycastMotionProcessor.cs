@@ -2,12 +2,20 @@
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine;
+using UnityEngine.Events;
 
-namespace WebCameraInputSystem.MotionDetection.Zone.MotionProcessors
+namespace WebCameraInputSystem.MotionDetection.MotionProcessors
 {
     public class GraphicRaycastMotionProcessor : MotionProcessor
     {
         [SerializeField] private GraphicRaycaster _graphicRaycaster;
+
+        public event UnityAction<List<RaycastResult>> OnHit;
+
+        private void Awake()
+        {
+            _graphicRaycaster ??= GetComponentInParent<GraphicRaycaster>();
+        }
 
         protected override void OnDetect(ZoneMotionDetector detector, float difference)
         {
@@ -15,13 +23,8 @@ namespace WebCameraInputSystem.MotionDetection.Zone.MotionProcessors
             eventData.position = transform.position;// Camera.main.WorldToScreenPoint(transform.position);
             var results = new List<RaycastResult>();
             _graphicRaycaster.Raycast(eventData, results);
-            foreach (RaycastResult result in results)
-            {
-                var clickHandler = result.gameObject.GetComponent<IPointerClickHandler>();
-                clickHandler?.OnPointerClick(new PointerEventData(EventSystem.current));
-
-                Debug.Log(result.gameObject);
-            }
+            if (results.Count > 0)
+                OnHit?.Invoke(results);
         }
     }
 }
