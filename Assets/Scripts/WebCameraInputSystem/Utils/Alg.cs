@@ -40,6 +40,24 @@ namespace WebCameraInputSystem.Utils
             return result;
         }
 
+        public static void Crop(WebCamTexture origin, Texture result, Rect rect, bool flipY)
+        {
+            if(result==null)
+                result = new Texture2D(origin.width, origin.height);
+            if (result.width != origin.width || result.height != origin.height)
+            {
+                GameObject.Destroy(result);
+                result = new Texture2D(origin.width, origin.height);
+            }
+
+            RectInt _rect = new RectInt((int)(origin.width * rect.x), (int)(origin.height * rect.y), (int)(origin.width * rect.width), (int)(origin.height * rect.height));
+
+            // Copy the pixel data from the original image to the new square image
+            Graphics.CopyTexture(origin, 0, 0, _rect.x, _rect.y, _rect.width, _rect.height, result, 0, 0, 0, 0);
+
+            (result as Texture2D).Apply();
+        }
+
         public static float[,] GetGrayScaleMatrix(byte[] bytes, Vector2Int size)
         {
             var result = new float[size.x, size.y];

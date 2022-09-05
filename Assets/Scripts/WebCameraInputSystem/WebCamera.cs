@@ -15,6 +15,8 @@ namespace WebCameraInputSystem
         private WebCamTexture _webCamTexture;
         private Texture2D _motionTexture;
 
+        public Texture FullTexture => _webCamTexture;
+
         public event UnityAction<WebCamTexture> OnPlay;
         public event UnityAction<WebCamTexture> OnStop;
         public event UnityAction<WebCamTexture, Texture2D> OnNewFrame;
