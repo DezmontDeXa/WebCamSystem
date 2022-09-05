@@ -38,7 +38,7 @@ namespace WebCameraInputSystem.Drawing
         private void ApplyTextureWithCrop(WebCamTexture texture)
         {
             if (_material == null) return;
-           Alg.Crop(texture, _material.mainTexture, _webCameraRect, true);
+            _material.mainTexture = Alg.Crop(texture, _webCameraRect, true);
         }
 
         protected abstract Material GetTargetMaterial();
