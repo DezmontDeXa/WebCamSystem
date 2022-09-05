@@ -21,16 +21,16 @@ namespace WebCameraInputSystem.MotionDetecting.MotionProcessors
             _motionDetector.OnFrameProcessed -= OnFrameProcessed;
         }
 
-        private void OnFrameProcessed(WebCamera camera, MotionDetector detector, float difference)
+        private void OnFrameProcessed(MotionDetector detector, float difference)
         {
             if (detector.HasMotion)
-                OnDetect(camera, detector, difference);
+                OnDetect(detector, difference);
             else
-                OnUnDetect(camera, detector, difference);
+                OnUnDetect(detector, difference);
         }
 
-        protected virtual void OnDetect(WebCamera camera, MotionDetector detector, float difference) { }
+        protected virtual void OnDetect(MotionDetector detector, float difference) { }
 
-        protected virtual void OnUnDetect(WebCamera camera, MotionDetector detector, float difference) { }
+        protected virtual void OnUnDetect(MotionDetector detector, float difference) { }
     }
 }

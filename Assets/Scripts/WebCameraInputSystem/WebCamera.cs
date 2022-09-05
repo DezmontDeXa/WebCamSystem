@@ -13,37 +13,35 @@ namespace WebCameraInputSystem
         [SerializeField] private int _detectFps = 10;
         [SerializeField] private bool _flipY = true;
         private float _prevTime = 0;
+        private WebCamTexture _webCamTexture;
+        private Texture2D _motionTexture;
 
-        public WebCamTexture WebCamTexture { get; private set; }
-        public Texture2D MotionTexture { get; private set; }
-        public Vector2Int MotionDetectFrameSize => _detectFrameSize;
-
-        public event UnityAction<WebCamera> OnNewFrame;
+        public event UnityAction<WebCameraFrame> OnNewFrame;
 
         private void Awake()
         {
             var cams = FindObjectsOfType<WebCamera>();
             if (cams.Length > 1)
-                Debug.LogWarning("It is recommended to use only one Web Camera Reader on scene");
-            WebCamTexture = new WebCamTexture(_requestedFrameSize.x, _requestedFrameSize.y, _requestedFps);
-            MotionTexture = new Texture2D(_detectFrameSize.x, _detectFrameSize.y);
+                Debug.LogWarning("Recommended to use only one Web Camera on scene");
+            _webCamTexture = new WebCamTexture(_requestedFrameSize.x, _requestedFrameSize.y, _requestedFps);
+            _motionTexture = new Texture2D(_detectFrameSize.x, _detectFrameSize.y);
         }
 
         private void OnEnable()
         {
-            WebCamTexture.Play();
+            _webCamTexture.Play();
             _prevTime = Time.timeSinceLevelLoad;
         }
 
         private void OnDisable()
         {
-            WebCamTexture.Stop();
+            _webCamTexture.Stop();
         }
 
         private void Update()
         {
-            if (!WebCamTexture.isPlaying) return;
-            if (!WebCamTexture.didUpdateThisFrame) return;
+            if (!_webCamTexture.isPlaying) return;
+            if (!_webCamTexture.didUpdateThisFrame) return;
             if (Time.timeSinceLevelLoad - _prevTime < 1f / _detectFps) return;
             _prevTime = Time.timeSinceLevelLoad;
             PerformFrame();
@@ -51,8 +49,22 @@ namespace WebCameraInputSystem
 
         private void PerformFrame()
         {
-            Alg.Resize(WebCamTexture, MotionTexture, _flipY);
-            OnNewFrame?.Invoke(this);
+            Alg.Resize(_webCamTexture, _motionTexture, _flipY);
+            OnNewFrame?.Invoke(new WebCameraFrame(_webCamTexture, _motionTexture));
         }        
+    }
+
+    public class WebCameraFrame
+    {
+        public WebCamTexture FullTexture { get; }
+        public Texture2D MotionTexture { get; }
+        public Vector2Int FullTextureSize => new Vector2Int(FullTexture.width, FullTexture.height);
+        public Vector2Int MotionTextureSize => new Vector2Int(MotionTexture.width, MotionTexture.height);
+
+        public WebCameraFrame(WebCamTexture fullTexture, Texture2D motionTexture)
+        {
+            FullTexture = fullTexture;
+            MotionTexture = motionTexture;
+        }
     }
 }

@@ -15,7 +15,7 @@ namespace WebCameraInputSystem.ZoneGetters
             _canvasRectTransform = GetComponentInParent<Canvas>().GetComponent<RectTransform>();
         }
 
-        protected override RectInt GetZonePerform(WebCamera camera, Vector2Int originalFrameSize)
+        protected override RectInt GetZonePerform(Vector2Int originalFrameSize)
         {
             var bounds = GetRectTransformBounds(_rectTransform);
             var canvasBounds = GetRectTransformBounds(_canvasRectTransform);
@@ -33,11 +33,11 @@ namespace WebCameraInputSystem.ZoneGetters
 
         private static Bounds GetRectTransformBounds(RectTransform transform)
         {
-            var WorldCorners = new Vector3[4];
-            transform.GetWorldCorners(WorldCorners);
-            var bounds = new Bounds(WorldCorners[0], Vector3.zero);
+            var worldCorners = new Vector3[4];
+            transform.GetWorldCorners(worldCorners);
+            var bounds = new Bounds(worldCorners[0], Vector3.zero);
             for (int i = 1; i < 4; ++i)
-                bounds.Encapsulate(WorldCorners[i]);
+                bounds.Encapsulate(worldCorners[i]);
             return bounds;
         }
     }

@@ -4,6 +4,6 @@ namespace WebCameraInputSystem.ZoneGetters
 {
     public interface IZoneGetter
     {
-        RectInt GetZone(WebCamera camera, Vector2Int frameSize);
+        RectInt GetZone(Vector2Int frameSize);
     }
 }

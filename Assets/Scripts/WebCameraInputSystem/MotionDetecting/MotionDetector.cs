@@ -22,8 +22,7 @@ namespace WebCameraInputSystem.MotionDetecting
 
         public ZoneGetter ZoneGetter => _zoneGetter;
 
-
-        public event UnityAction<WebCamera, MotionDetector, float> OnFrameProcessed;
+        public event UnityAction<MotionDetector, float> OnFrameProcessed;
 
         public event UnityAction<MotionDetector, float> OnMotionDetected;
 
@@ -37,18 +36,18 @@ namespace WebCameraInputSystem.MotionDetecting
             _webCamera.OnNewFrame -= OnNewFrame;
         }
 
-        private void OnNewFrame(WebCamera camera)
+        private void OnNewFrame(WebCameraFrame frame)
         {
-            var targetZone = _zoneGetter.GetZone(camera, camera.MotionDetectFrameSize);
-            var bytes = camera.MotionTexture.GetRawTextureData();
-            var bytesOfZone = Alg.CropByBytes(bytes, camera.MotionDetectFrameSize, targetZone);
+            var targetZone = _zoneGetter.GetZone(frame.MotionTextureSize);
+            var bytes = frame.MotionTexture.GetRawTextureData();
+            var bytesOfZone = Alg.CropByBytes(bytes, frame.MotionTextureSize, targetZone);
             var grayscaled = Alg.GetGrayScale(bytesOfZone);
 
             var prevFrameHasMotion = HasMotion;
             _difference = Alg.CalcDifference(grayscaled, _background);
             InvokeIfNeeded(prevFrameHasMotion, _difference, _minDifference, _detectMode);
             UpdateBackground(grayscaled);
-            OnFrameProcessed?.Invoke(camera, this, _difference);
+            OnFrameProcessed?.Invoke(this, _difference);
         }
 
         private void InvokeIfNeeded(bool prevFrameHasMotion, float difference, float minDifference, DetectMode detectMode)

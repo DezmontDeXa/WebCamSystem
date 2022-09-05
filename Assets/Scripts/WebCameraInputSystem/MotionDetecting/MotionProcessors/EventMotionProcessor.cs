@@ -21,12 +21,12 @@ namespace WebCameraInputSystem.MotionDetecting.MotionProcessors
             remove => _onUnDetected.RemoveListener(value);
         }
 
-        protected override void OnDetect(WebCamera camera, MotionDetector detector, float difference)
+        protected override void OnDetect(MotionDetector detector, float difference)
         {
             _onDetected.Invoke();
         }
 
-        protected override void OnUnDetect(WebCamera camera, MotionDetector detector, float difference)
+        protected override void OnUnDetect(MotionDetector detector, float difference)
         {
             _onUnDetected.Invoke();
         }

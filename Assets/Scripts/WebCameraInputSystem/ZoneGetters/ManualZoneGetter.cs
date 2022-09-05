@@ -7,7 +7,7 @@ namespace WebCameraInputSystem.ZoneGetters
     {
         [SerializeField] private Rect _zone = new Rect(0,0,1,1);
 
-        protected override RectInt GetZonePerform(WebCamera camera, Vector2Int originalFrameSize)
+        protected override RectInt GetZonePerform(Vector2Int originalFrameSize)
         {
             if(_zone.width==0 ||_zone.height==0 || _zone.x<0 || _zone.y<0)
                 throw new System.Exception($"{gameObject.name}.ManualZoneGetter: Invalide zone parameters");

@@ -12,12 +12,12 @@ namespace WebCameraInputSystem.MotionDetecting.MotionProcessors
         [SerializeField] private Color _noMotionColor;
         [SerializeField] private TMP_Text _scoreText;
 
-        protected override void OnDetect(WebCamera camera, MotionDetector  detector, float difference)
+        protected override void OnDetect(MotionDetector detector, float difference)
         {
             OnFrameProcessed(detector);
         }
 
-        protected override void OnUnDetect(WebCamera camera, MotionDetector detector, float difference)
+        protected override void OnUnDetect(MotionDetector detector, float difference)
         {
             OnFrameProcessed(detector);
         }
@@ -27,7 +27,7 @@ namespace WebCameraInputSystem.MotionDetecting.MotionProcessors
             if (_colorIndicatorImage != null)
                 _colorIndicatorImage.color = detector.HasMotion ? _motionColor : _noMotionColor;
 
-            if(_scoreText!=null)
+            if (_scoreText != null)
                 _scoreText.text = detector.Difference.ToString();
         }
     }

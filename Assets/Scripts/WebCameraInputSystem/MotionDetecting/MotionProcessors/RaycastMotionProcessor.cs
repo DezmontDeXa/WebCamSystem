@@ -6,7 +6,7 @@ namespace WebCameraInputSystem.MotionDetecting.MotionProcessors
     [AddComponentMenu("WebCameraInputSystem/Processors/Raycast Motion Processor")]
     public class RaycastMotionProcessor : MotionProcessor
     {
-        protected override void OnDetect(WebCamera camera, MotionDetector detector, float difference)
+        protected override void OnDetect(MotionDetector detector, float difference)
         {
             var screenPoint = Camera.main.WorldToScreenPoint(transform.position);
             var ray = Camera.main.ScreenPointToRay(screenPoint);
