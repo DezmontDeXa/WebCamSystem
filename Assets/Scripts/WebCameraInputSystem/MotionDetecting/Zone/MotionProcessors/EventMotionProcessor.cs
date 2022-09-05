@@ -1,9 +1,8 @@
 ﻿using UnityEngine.Events;
 using UnityEngine;
 
-namespace WebCameraInputSystem.MotionDetecting.MotionProcessors
+namespace WebCameraInputSystem.MotionDetection.Zone.MotionProcessors
 {
-    [AddComponentMenu("WebCameraInputSystem/Processors/Event Motion Processor")]
     public class EventMotionProcessor : MotionProcessor
     {
         [SerializeField] private UnityEvent _onDetected;
@@ -21,12 +20,12 @@ namespace WebCameraInputSystem.MotionDetecting.MotionProcessors
             remove => _onUnDetected.RemoveListener(value);
         }
 
-        protected override void OnDetect(MotionDetector detector, float difference)
+        protected override void OnDetect(ZoneMotionDetector detector, float difference)
         {
             _onDetected.Invoke();
         }
 
-        protected override void OnUnDetect(MotionDetector detector, float difference)
+        protected override void OnUnDetect(ZoneMotionDetector detector, float difference)
         {
             _onUnDetected.Invoke();
         }

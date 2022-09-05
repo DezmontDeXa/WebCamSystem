@@ -7,24 +7,25 @@ namespace WebCameraInputSystem.Drawing
     {
         [SerializeField] private WebCamera _webCamera;
         [SerializeField] private ZoneGetter _zoneGetter;
+        private WebCamTexture _webCamTexture;
 
         private void OnEnable()
         {
-            _webCamera.OnNewFrame += OnNewFrame;
+            //_webCamera.OnNewFrame += OnNewFrame;
         }
 
         private void OnDisable()
         {
-            _webCamera.OnNewFrame -= OnNewFrame;
+            //_webCamera.OnNewFrame -= OnNewFrame;
         }
 
-        private void OnNewFrame(WebCameraFrame frame)
+        private void OnNewFrame(WebCamTexture frame)
         {
-            RectInt zone = new RectInt(0, 0, frame.FullTextureSize.x, frame.FullTextureSize.y);
+            RectInt zone = new RectInt(0, 0, frame.width, frame.height);
             if (_zoneGetter != null)
-                zone = _zoneGetter.GetZone(new Vector2Int(frame.FullTextureSize.x, frame.FullTextureSize.y));
+                zone = _zoneGetter.GetZone(new Vector2Int(frame.width, frame.height));
 
-            var pixels = frame.FullTexture.GetPixels(zone.x, zone.y, zone.width, zone.height);
+            var pixels = frame.GetPixels(zone.x, zone.y, zone.width, zone.height);
             ApplyPixels(pixels, zone.width, zone.height);
         }
 

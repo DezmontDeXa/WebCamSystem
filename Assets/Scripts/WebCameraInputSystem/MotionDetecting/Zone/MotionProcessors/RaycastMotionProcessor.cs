@@ -1,12 +1,11 @@
 using UnityEngine.EventSystems;
 using UnityEngine;
 
-namespace WebCameraInputSystem.MotionDetecting.MotionProcessors
+namespace WebCameraInputSystem.MotionDetection.Zone.MotionProcessors
 {
-    [AddComponentMenu("WebCameraInputSystem/Processors/Raycast Motion Processor")]
     public class RaycastMotionProcessor : MotionProcessor
     {
-        protected override void OnDetect(MotionDetector detector, float difference)
+        protected override void OnDetect(ZoneMotionDetector detector, float difference)
         {
             var screenPoint = Camera.main.WorldToScreenPoint(transform.position);
             var ray = Camera.main.ScreenPointToRay(screenPoint);

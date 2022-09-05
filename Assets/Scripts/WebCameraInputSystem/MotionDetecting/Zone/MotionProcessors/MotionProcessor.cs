@@ -1,14 +1,14 @@
 ﻿using UnityEngine;
 
-namespace WebCameraInputSystem.MotionDetecting.MotionProcessors
+namespace WebCameraInputSystem.MotionDetection.Zone.MotionProcessors
 {
     public abstract class MotionProcessor : MonoBehaviour
     {
-        [SerializeField] private MotionDetector _motionDetector;
+        [SerializeField] private ZoneMotionDetector _motionDetector;
 
         private void Awake()
         {
-            _motionDetector ??= GetComponent<MotionDetector>();
+            _motionDetector ??= GetComponent<ZoneMotionDetector>();
         }
 
         private void OnEnable()
@@ -21,7 +21,7 @@ namespace WebCameraInputSystem.MotionDetecting.MotionProcessors
             _motionDetector.OnFrameProcessed -= OnFrameProcessed;
         }
 
-        private void OnFrameProcessed(MotionDetector detector, float difference)
+        private void OnFrameProcessed(ZoneMotionDetector detector, float difference)
         {
             if (detector.HasMotion)
                 OnDetect(detector, difference);
@@ -29,8 +29,8 @@ namespace WebCameraInputSystem.MotionDetecting.MotionProcessors
                 OnUnDetect(detector, difference);
         }
 
-        protected virtual void OnDetect(MotionDetector detector, float difference) { }
+        protected virtual void OnDetect(ZoneMotionDetector detector, float difference) { }
 
-        protected virtual void OnUnDetect(MotionDetector detector, float difference) { }
+        protected virtual void OnUnDetect(ZoneMotionDetector detector, float difference) { }
     }
 }

@@ -4,10 +4,10 @@ using UnityEngine.Events;
 using UnityEngine;
 using System;
 
-namespace WebCameraInputSystem.MotionDetecting
+namespace WebCameraInputSystem.MotionDetection.Zone
 {
-    [AddComponentMenu("WebCameraInputSystem/MotionDetector")]
-    public class MotionDetector : MonoBehaviour
+    [AddComponentMenu("WebCamera InputSystem/Motions/Zone/Zone Motion Detector")]
+    public class ZoneMotionDetector : MonoBehaviour
     {
         [SerializeField] protected WebCamera _webCamera;
         [SerializeField] private float _minDifference = 0.05f;
@@ -22,9 +22,9 @@ namespace WebCameraInputSystem.MotionDetecting
 
         public ZoneGetter ZoneGetter => _zoneGetter;
 
-        public event UnityAction<MotionDetector, float> OnFrameProcessed;
+        public event UnityAction<ZoneMotionDetector, float> OnFrameProcessed;
 
-        public event UnityAction<MotionDetector, float> OnMotionDetected;
+        public event UnityAction<ZoneMotionDetector, float> OnMotionDetected;
 
         private void OnEnable()
         {
@@ -36,11 +36,12 @@ namespace WebCameraInputSystem.MotionDetecting
             _webCamera.OnNewFrame -= OnNewFrame;
         }
 
-        private void OnNewFrame(WebCameraFrame frame)
+        private void OnNewFrame(WebCamTexture frame, Texture2D motionFrame)
         {
-            var targetZone = _zoneGetter.GetZone(frame.MotionTextureSize);
-            var bytes = frame.MotionTexture.GetRawTextureData();
-            var bytesOfZone = Alg.CropByBytes(bytes, frame.MotionTextureSize, targetZone);
+            var motionTextureSize = new Vector2Int(motionFrame.width, motionFrame.height);
+            var targetZone = _zoneGetter.GetZone(motionTextureSize);
+            var bytes = motionFrame.GetRawTextureData();
+            var bytesOfZone = Alg.CropByBytes(bytes, motionTextureSize, targetZone);
             var grayscaled = Alg.GetGrayScale(bytesOfZone);
 
             var prevFrameHasMotion = HasMotion;
@@ -70,8 +71,8 @@ namespace WebCameraInputSystem.MotionDetecting
             if (_background.Length != pixels.Length) return;
 
             for (var i = 0; i < _background.Length; i++)
-                //_background[i] = MathF.Round(Alg.SquareMediateValue(_background[i], pixels[i]), 3);
-                _background[i] = MathF.Round(Alg.MediateValue(_background[i], pixels[i]), 3);
+                _background[i] = MathF.Round(Alg.SquareMediateValue(_background[i], pixels[i]), 3);
+                //_background[i] = MathF.Round(Alg.MediateValue(_background[i], pixels[i]), 3);
         }
 
     }

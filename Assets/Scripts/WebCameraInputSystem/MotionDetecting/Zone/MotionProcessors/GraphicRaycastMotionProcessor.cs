@@ -3,14 +3,13 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine;
 
-namespace WebCameraInputSystem.MotionDetecting.MotionProcessors
+namespace WebCameraInputSystem.MotionDetection.Zone.MotionProcessors
 {
-    [AddComponentMenu("WebCameraInputSystem/Processors/Graphic Raycast Motion Processor")]
     public class GraphicRaycastMotionProcessor : MotionProcessor
     {
         [SerializeField] private GraphicRaycaster _graphicRaycaster;
 
-        protected override void OnDetect(MotionDetector detector, float difference)
+        protected override void OnDetect(ZoneMotionDetector detector, float difference)
         {
             var eventData = new PointerEventData(EventSystem.current);
             eventData.position = transform.position;// Camera.main.WorldToScreenPoint(transform.position);

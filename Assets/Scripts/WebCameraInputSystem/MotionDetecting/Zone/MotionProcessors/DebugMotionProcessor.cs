@@ -2,9 +2,8 @@ using UnityEngine.UI;
 using UnityEngine;
 using TMPro;
 
-namespace WebCameraInputSystem.MotionDetecting.MotionProcessors
+namespace WebCameraInputSystem.MotionDetection.Zone.MotionProcessors
 {
-    [AddComponentMenu("WebCameraInputSystem/Processors/Debug Motion Processor")]
     public class DebugMotionProcessor : MotionProcessor
     {
         [SerializeField] private Image _colorIndicatorImage;
@@ -12,23 +11,23 @@ namespace WebCameraInputSystem.MotionDetecting.MotionProcessors
         [SerializeField] private Color _noMotionColor;
         [SerializeField] private TMP_Text _scoreText;
 
-        protected override void OnDetect(MotionDetector detector, float difference)
+        protected override void OnDetect(ZoneMotionDetector detector, float difference)
         {
             OnFrameProcessed(detector);
         }
 
-        protected override void OnUnDetect(MotionDetector detector, float difference)
+        protected override void OnUnDetect(ZoneMotionDetector detector, float difference)
         {
             OnFrameProcessed(detector);
         }
 
-        private void OnFrameProcessed(MotionDetector detector)
+        private void OnFrameProcessed(ZoneMotionDetector detector)
         {
             if (_colorIndicatorImage != null)
                 _colorIndicatorImage.color = detector.HasMotion ? _motionColor : _noMotionColor;
 
             if (_scoreText != null)
-                _scoreText.text = detector.Difference.ToString();
+                _scoreText.text = detector.Difference.ToString("0.000");
         }
     }
 }

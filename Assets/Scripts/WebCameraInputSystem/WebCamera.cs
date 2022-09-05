@@ -4,19 +4,20 @@ using UnityEngine;
 
 namespace WebCameraInputSystem
 {
-    [AddComponentMenu("WebCameraInputSystem/WebCamera")]
     public class WebCamera : MonoBehaviour
     {
         [SerializeField] private Vector2Int _requestedFrameSize = new Vector2Int(1920, 1080);
         [SerializeField] private int _requestedFps = 30;
         [SerializeField] private Vector2Int _detectFrameSize = new Vector2Int(192, 108);
         [SerializeField] private int _detectFps = 10;
-        [SerializeField] private bool _flipY = true;
+        [SerializeField] private bool _flipY;
         private float _prevTime = 0;
         private WebCamTexture _webCamTexture;
         private Texture2D _motionTexture;
 
-        public event UnityAction<WebCameraFrame> OnNewFrame;
+        public event UnityAction<WebCamTexture> OnPlay;
+        public event UnityAction<WebCamTexture> OnStop;
+        public event UnityAction<WebCamTexture, Texture2D> OnNewFrame;
 
         private void Awake()
         {
@@ -31,11 +32,13 @@ namespace WebCameraInputSystem
         {
             _webCamTexture.Play();
             _prevTime = Time.timeSinceLevelLoad;
+            OnPlay?.Invoke(_webCamTexture);
         }
 
         private void OnDisable()
         {
             _webCamTexture.Stop();
+            OnStop?.Invoke(_webCamTexture);
         }
 
         private void Update()
@@ -50,21 +53,7 @@ namespace WebCameraInputSystem
         private void PerformFrame()
         {
             Alg.Resize(_webCamTexture, _motionTexture, _flipY);
-            OnNewFrame?.Invoke(new WebCameraFrame(_webCamTexture, _motionTexture));
-        }        
-    }
-
-    public class WebCameraFrame
-    {
-        public WebCamTexture FullTexture { get; }
-        public Texture2D MotionTexture { get; }
-        public Vector2Int FullTextureSize => new Vector2Int(FullTexture.width, FullTexture.height);
-        public Vector2Int MotionTextureSize => new Vector2Int(MotionTexture.width, MotionTexture.height);
-
-        public WebCameraFrame(WebCamTexture fullTexture, Texture2D motionTexture)
-        {
-            FullTexture = fullTexture;
-            MotionTexture = motionTexture;
+            OnNewFrame?.Invoke(_webCamTexture, _motionTexture);
         }
     }
 }

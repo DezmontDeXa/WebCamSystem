@@ -20,6 +20,46 @@ namespace WebCameraInputSystem.Utils
             RenderTexture.ReleaseTemporary(rt);
         }
 
+        public static float[,] CalcDifferenceMatrix(float[,] grayscaled, float[,] background)
+        {
+            if (background == null) return default;
+            if (grayscaled.Length != background.Length) return default;
+
+            var result = new float[grayscaled.GetLength(0), grayscaled.GetLength(1)];
+
+            for (var x = 0; x < grayscaled.GetLength(0); x++)
+            {
+                for (var y = 0; y < grayscaled.GetLength(1); y++)
+                {
+                    result[x,y] = 
+                        MathF.Round(
+                            MathF.Abs(
+                                MathF.Abs(background[x,y]) - MathF.Abs(grayscaled[x, y])));
+                }
+            }
+            return result;
+        }
+
+        public static float[,] GetGrayScaleMatrix(byte[] bytes, Vector2Int size)
+        {
+            var result = new float[size.x, size.y];
+            var byteIndex = 0;
+            for (var x = 0; x < size.x; x++)
+            {
+                for (var y = 0; y < size.y; y++)
+                {
+                    var value =
+                    (bytes[byteIndex + 0] * 0.3f) +
+                    (bytes[byteIndex + 1] * 0.59f) +
+                    (bytes[byteIndex + 2] * 0.11f);
+                    value *= 1f / 255f;
+                    result[x, y] = MathF.Round(value, 2);
+                    byteIndex += 4;
+                }
+            }
+            return result;
+        }
+
         public static float CalcDifference(float[] pixels, float[] background)
         {
             if (background == null) return 0;
