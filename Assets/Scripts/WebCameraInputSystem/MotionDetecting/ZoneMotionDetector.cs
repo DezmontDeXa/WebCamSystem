@@ -12,6 +12,7 @@ namespace WebCameraInputSystem.MotionDetection
     {
         [SerializeField] protected WebCamera _webCamera;
         [SerializeField] private float _minDifference = 0.02f;
+        [SerializeField, Range(0, 1f)] private float _minPixelDifference = 0.2f;
         [SerializeField] private ZoneGetter _zoneGetter;
         [SerializeField] private DetectMode _detectMode;
         [SerializeField] private UpdateBackgroundMode _updateBackgroundMode;
@@ -45,7 +46,7 @@ namespace WebCameraInputSystem.MotionDetection
             var grayscaled = Alg.GetGrayScale(bytesOfZone);
 
             var prevFrameHasMotion = HasMotion;
-            _difference = Alg.CalcDifference(grayscaled, _background);
+            _difference = Alg.CalcDifference(grayscaled, _background, _minPixelDifference);
             InvokeIfNeeded(prevFrameHasMotion, _difference, _minDifference, _detectMode);
             UpdateBackground(grayscaled);
             OnFrameProcessed?.Invoke(this, _difference);

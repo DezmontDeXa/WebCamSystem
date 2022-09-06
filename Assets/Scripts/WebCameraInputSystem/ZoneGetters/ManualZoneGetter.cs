@@ -2,7 +2,7 @@
 
 namespace WebCameraInputSystem.ZoneGetters
 {
-    [AddComponentMenu("WebCameraInputSystem/Zone Getters/Manual")]
+    [AddComponentMenu("WebCamera InputSystem/Zones/Manual Zone Getter")]
     public class ManualZoneGetter : ZoneGetter
     {
         [SerializeField] private Rect _zone = new Rect(0,0,1,1);

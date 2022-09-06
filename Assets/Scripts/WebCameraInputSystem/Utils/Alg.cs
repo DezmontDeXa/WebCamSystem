@@ -73,20 +73,20 @@ namespace WebCameraInputSystem.Utils
             return result;
         }
 
-        public static void Crop(Texture origin, ref Texture2D target, Rect rect)
-        {
-            var _rect = new RectInt(
-                (int)(origin.width * rect.x), 
-                (int)(origin.height * rect.y), 
-                (int)(origin.width * rect.width), 
-                (int)(origin.height * rect.height));
-            _rect.ClampToBounds(new RectInt(0, 0, origin.width, origin.height));
-
-            if (target == null)
-                target = new Texture2D(_rect.width, _rect.height);
-
+        public static void Crop(Texture origin, ref Texture2D target, RectInt _rect)
+        {           
             Graphics.CopyTexture(origin, 0, 0, _rect.x, _rect.y, _rect.width, _rect.height, target, 0, 0, 0, 0);
             target.Apply();
+        }
+
+        public static void CropByBlit(Texture origin, ref Texture2D target, RectInt _rect)
+        {
+            var rt = RenderTexture.GetTemporary(_rect.width, _rect.height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default);
+            RenderTexture.active = rt;
+            Graphics.Blit(origin, rt, new Vector2(1, 1), new Vector2(0, 0));
+            target.ReadPixels(new Rect(0.0f, 0.0f, _rect.width, _rect.height), 0, 0);
+            target.Apply();
+            RenderTexture.ReleaseTemporary(rt);
         }
 
         public static float[,] GetGrayScaleMatrix(byte[] bytes, Vector2Int size)
@@ -109,16 +109,17 @@ namespace WebCameraInputSystem.Utils
             return result;
         }
 
-        public static float CalcDifference(float[] pixels, float[] background)
+        public static float CalcDifference(float[] pixels, float[] background, float _minPixelDifference)
         {
             if (background == null) return 0;
             if (pixels.Length != background.Length) return 0;
 
-            var difference = 0f;
+            var differentCount = 0;
             for (var i = 0; i < background.Length; i++)
-                difference += MathF.Abs(MathF.Abs(background[i]) - MathF.Abs(pixels[i]));
-            difference /= background.Length;
-            return MathF.Round(difference, 3);
+                if (MathF.Abs(MathF.Abs(background[i]) - MathF.Abs(pixels[i])) > _minPixelDifference)
+                    differentCount++;
+
+            return (float)differentCount / background.Length;
         }
 
         public static byte[] CropByBytes(byte[] bytes, Vector2Int textureSize, RectInt targetZone)
@@ -126,12 +127,15 @@ namespace WebCameraInputSystem.Utils
             targetZone.ClampToBounds(new RectInt(0, 0, textureSize.x, textureSize.y));
             var result = new byte[targetZone.width * targetZone.height * 4];
 
+            var lastIndex= 0;
             for (var lineIndex = 0; lineIndex < targetZone.height; lineIndex++)
             {
                 var firstIndex = (textureSize.x * (targetZone.y + lineIndex) + targetZone.x) * 4;
                 var lineLenght = targetZone.width * 4;
                 for (int i = 0; i < lineLenght; i++)
-                    result[i] = bytes[firstIndex + i];
+                    result[i + lastIndex] = bytes[firstIndex + i];
+
+                lastIndex += lineLenght;
             }
             return result;
         }
@@ -143,10 +147,10 @@ namespace WebCameraInputSystem.Utils
             for (var pixel = 0; pixel < result.Length; pixel++)
             {
                 var rawValue =
-                    (bytes[byteIndex + 0] * 0.3f) +
-                    (bytes[byteIndex + 1] * 0.59f) +
-                    (bytes[byteIndex + 2] * 0.11f);
-                rawValue *= 1f / 255f;
+                    (bytes[byteIndex + 0] * 0.21f) +
+                    (bytes[byteIndex + 1] * 0.72f) +
+                    (bytes[byteIndex + 2] * 0.07f);
+                rawValue /= 255f;
 
                 result[pixel] = MathF.Round(rawValue, 2);
                 byteIndex += 4;

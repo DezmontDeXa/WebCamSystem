@@ -1,11 +1,15 @@
 ﻿using WebCameraInputSystem.Utils;
 using UnityEngine.Events;
 using UnityEngine;
+using System.Linq;
+using UnityEngine.UI;
 
 namespace WebCameraInputSystem
 {
+    [AddComponentMenu("WebCamera InputSystem/WebCamera")]
     public class WebCamera : MonoBehaviour
     {
+        [SerializeField] private string _cameraName;
         [SerializeField] private Vector2Int _requestedFrameSize = new Vector2Int(1920, 1080);
         [SerializeField] private int _requestedFps = 30;
         [SerializeField] private Vector2Int _detectFrameSize = new Vector2Int(192, 108);
@@ -16,22 +20,31 @@ namespace WebCameraInputSystem
         private Texture2D _fullTexture;
         private Texture2D _motionTexture;
 
+        [SerializeField] private RawImage[] _rawImages;
         public Texture FullTexture => _fullTexture;
 
         public event UnityAction<Texture, Texture2D> OnNewFrame;
 
         private void Awake()
         {
+            Debug.Log("Cameras: " + string.Join("\r\n", WebCamTexture.devices.Select(x=>x.name)));
+
             var cams = FindObjectsOfType<WebCamera>();
             if (cams.Length > 1)
                 Debug.LogWarning("Recommended to use only one Web Camera on scene");
-            _webCamTexture = new WebCamTexture(_requestedFrameSize.x, _requestedFrameSize.y, _requestedFps);
             _motionTexture = new Texture2D(_detectFrameSize.x, _detectFrameSize.y);
             _fullTexture = new Texture2D(_requestedFrameSize.x, _requestedFrameSize.y);
         }
 
         private void OnEnable()
         {
+            _webCamTexture = new WebCamTexture(_cameraName, _requestedFrameSize.x, _requestedFrameSize.y, _requestedFps);
+            foreach (var raw in _rawImages)
+            {
+                raw.texture = _webCamTexture;
+                raw.material.mainTexture = _webCamTexture;
+            }
+
             _webCamTexture.Play();
             _prevTime = Time.timeSinceLevelLoad;
         }
@@ -39,6 +52,7 @@ namespace WebCameraInputSystem
         private void OnDisable()
         {
             _webCamTexture.Stop();
+            Destroy(_webCamTexture);
         }
 
         private void Update()

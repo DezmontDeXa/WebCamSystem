@@ -2,7 +2,7 @@
 
 namespace WebCameraInputSystem.ZoneGetters
 {
-    [AddComponentMenu("WebCameraInputSystem/Zone Getters/From RectTransform")]
+    [AddComponentMenu("WebCamera InputSystem/Zones/RectTransform Zone Getter")]
     [RequireComponent(typeof(RectTransform))]
     public class RectTransformZoneGetter : ZoneGetter
     {

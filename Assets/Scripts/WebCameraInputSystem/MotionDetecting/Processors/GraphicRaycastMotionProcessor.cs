@@ -6,6 +6,7 @@ using UnityEngine.Events;
 
 namespace WebCameraInputSystem.MotionDetection.MotionProcessors
 {
+    [AddComponentMenu("WebCamera InputSystem/Motions/Processors/Graphic Raycast Motion Processor")]
     public class GraphicRaycastMotionProcessor : MotionProcessor
     {
         [SerializeField] private GraphicRaycaster _graphicRaycaster;

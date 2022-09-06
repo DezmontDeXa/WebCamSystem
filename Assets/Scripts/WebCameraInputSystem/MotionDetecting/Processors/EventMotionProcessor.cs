@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace WebCameraInputSystem.MotionDetection.MotionProcessors
 {
+    [AddComponentMenu("WebCamera InputSystem/Motions/Processors/Event Motion Processor")]
     public class EventMotionProcessor : MotionProcessor
     {
         [SerializeField] private UnityEvent<float> _onDetected;

@@ -3,6 +3,7 @@ using UnityEngine.Events;
 
 namespace WebCameraInputSystem.MotionDetection.MotionProcessors
 {
+    [AddComponentMenu("WebCamera InputSystem/Motions/Processors/Raycast Motion Processor")]
     public class RaycastMotionProcessor : MotionProcessor
     {
         public event UnityAction<RaycastHit> OnHit;
