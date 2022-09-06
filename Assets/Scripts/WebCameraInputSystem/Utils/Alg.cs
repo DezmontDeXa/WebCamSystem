@@ -19,6 +19,39 @@ namespace WebCameraInputSystem.Utils
             target.Apply();
             RenderTexture.ReleaseTemporary(rt);
         }
+        
+        public static Texture ResizeCopy(Texture original, RectInt size, bool flipY = true, bool mipmap = true, FilterMode filter = FilterMode.Bilinear)
+        {
+            var rt = RenderTexture.GetTemporary(size.width, size.height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default);
+            RenderTexture.active = rt;
+            if (flipY)
+                Graphics.Blit(original, rt, new Vector2(-1, 1), new Vector2(1, 0));
+            else
+                Graphics.Blit(original, rt);
+            var target = new Texture2D(size.width, size.height);
+            target.filterMode = filter;
+            target.ReadPixels(new Rect(0.0f, 0.0f, size.width, size.height), 0, 0);
+            target.Apply();
+            RenderTexture.ReleaseTemporary(rt);
+            return target;
+        }
+        
+        public static Texture2D FlipY(Texture origin, FilterMode filter = FilterMode.Point)
+        {
+            var rt = RenderTexture.GetTemporary(origin.width, origin.height, 32);
+
+            Graphics.Blit(origin, rt, new Vector2(-1, 1), new Vector2(1, 0));
+
+            var result = new Texture2D(origin.width, origin.height);
+
+            result.filterMode = filter;
+            result.ReadPixels(new Rect(0.0f, 0.0f, origin.width, origin.height), 0, 0);
+            result.Apply();
+
+            RenderTexture.ReleaseTemporary(rt);
+
+            return result;
+        }
 
         public static float[,] CalcDifferenceMatrix(float[,] grayscaled, float[,] background)
         {
@@ -40,19 +73,20 @@ namespace WebCameraInputSystem.Utils
             return result;
         }
 
-        public static Texture2D Crop(WebCamTexture origin, Rect rect, bool flipY)
+        public static void Crop(Texture origin, ref Texture2D target, Rect rect)
         {
-            Texture2D texture = new Texture2D(origin.width, origin.height);
-
-            RectInt _rect = new RectInt((int)(origin.width * rect.x), (int)(origin.height * rect.y), (int)(origin.width * rect.width), (int)(origin.height * rect.height));
+            var _rect = new RectInt(
+                (int)(origin.width * rect.x), 
+                (int)(origin.height * rect.y), 
+                (int)(origin.width * rect.width), 
+                (int)(origin.height * rect.height));
             _rect.ClampToBounds(new RectInt(0, 0, origin.width, origin.height));
 
-            // Copy the pixel data from the original image to the new square image
-            Graphics.CopyTexture(origin, 0, 0, _rect.x, _rect.y, _rect.width, _rect.height, texture, 0, 0, 0, 0);
+            if (target == null)
+                target = new Texture2D(_rect.width, _rect.height);
 
-            texture.Apply();
-
-            return texture;
+            Graphics.CopyTexture(origin, 0, 0, _rect.x, _rect.y, _rect.width, _rect.height, target, 0, 0, 0, 0);
+            target.Apply();
         }
 
         public static float[,] GetGrayScaleMatrix(byte[] bytes, Vector2Int size)

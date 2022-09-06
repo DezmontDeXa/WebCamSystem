@@ -13,13 +13,12 @@ namespace WebCameraInputSystem
         [SerializeField] private bool _flipY;
         private float _prevTime = 0;
         private WebCamTexture _webCamTexture;
+        private Texture2D _fullTexture;
         private Texture2D _motionTexture;
 
-        public Texture FullTexture => _webCamTexture;
+        public Texture FullTexture => _fullTexture;
 
-        public event UnityAction<WebCamTexture> OnPlay;
-        public event UnityAction<WebCamTexture> OnStop;
-        public event UnityAction<WebCamTexture, Texture2D> OnNewFrame;
+        public event UnityAction<Texture, Texture2D> OnNewFrame;
 
         private void Awake()
         {
@@ -28,19 +27,18 @@ namespace WebCameraInputSystem
                 Debug.LogWarning("Recommended to use only one Web Camera on scene");
             _webCamTexture = new WebCamTexture(_requestedFrameSize.x, _requestedFrameSize.y, _requestedFps);
             _motionTexture = new Texture2D(_detectFrameSize.x, _detectFrameSize.y);
+            _fullTexture = new Texture2D(_requestedFrameSize.x, _requestedFrameSize.y);
         }
 
         private void OnEnable()
         {
             _webCamTexture.Play();
             _prevTime = Time.timeSinceLevelLoad;
-            OnPlay?.Invoke(_webCamTexture);
         }
 
         private void OnDisable()
         {
             _webCamTexture.Stop();
-            OnStop?.Invoke(_webCamTexture);
         }
 
         private void Update()
@@ -55,7 +53,8 @@ namespace WebCameraInputSystem
         private void PerformFrame()
         {
             Alg.Resize(_webCamTexture, _motionTexture, _flipY);
-            OnNewFrame?.Invoke(_webCamTexture, _motionTexture);
+            Alg.Resize(_webCamTexture, _fullTexture, _flipY);
+            OnNewFrame?.Invoke(_fullTexture, _motionTexture);
         }
     }
 }

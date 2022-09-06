@@ -1,6 +1,5 @@
-﻿using System;
+﻿using WebCameraInputSystem.Utils;
 using UnityEngine;
-using WebCameraInputSystem.Utils;
 
 namespace WebCameraInputSystem.Drawing
 {
@@ -9,6 +8,7 @@ namespace WebCameraInputSystem.Drawing
         [SerializeField] private WebCamera _webCamera;
         [SerializeField] private Rect _webCameraRect = new Rect(0,0,1,1);
         private Material _material;
+        private Texture2D _croppedTexture;
 
         private void OnEnable()
         {
@@ -22,23 +22,31 @@ namespace WebCameraInputSystem.Drawing
             _material.mainTexture = null;
         }
 
-        private void OnNewFrame(WebCamTexture cameraTexture, Texture2D motionTexture)
+        private void OnNewFrame(Texture cameraTexture, Texture2D motionTexture)
         {
             ApplyTextureWithCrop(cameraTexture);
         }
 
-        private void ApplyTexture(WebCamTexture texture)
-        {
-            var mat = GetTargetMaterial();
-            mat.mainTexture = texture;
-            mat.mainTextureOffset = new Vector2(_webCameraRect.x, _webCameraRect.y);
-            mat.mainTextureScale = new Vector2(_webCameraRect.width, _webCameraRect.height);
-        }
-
-        private void ApplyTextureWithCrop(WebCamTexture texture)
+        private void ApplyTextureWithCrop(Texture texture)
         {
             if (_material == null) return;
-            _material.mainTexture = Alg.Crop(texture, _webCameraRect, true);
+            NormalizeWebCameraRect();
+            Alg.Crop(texture, ref _croppedTexture, _webCameraRect);
+            _material.mainTexture = _croppedTexture;
+        }
+
+        private void NormalizeWebCameraRect()
+        {
+            if (_webCameraRect.width > 1f) _webCameraRect.width = 1f;
+            if (_webCameraRect.height > 1f) _webCameraRect.height = 1f;
+            if (_webCameraRect.width < 0) _webCameraRect.width = 0f;
+            if (_webCameraRect.height < 0f) _webCameraRect.height = 0f;
+
+            if (_webCameraRect.x < 0)
+                _webCameraRect.x = 0;
+            if (_webCameraRect.y < 0)
+                _webCameraRect.y = 0;
+
         }
 
         protected abstract Material GetTargetMaterial();

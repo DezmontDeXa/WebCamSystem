@@ -36,7 +36,7 @@ namespace WebCameraInputSystem.MotionDetection
             _webCamera.OnNewFrame -= OnNewFrame;
         }
 
-        private void OnNewFrame(WebCamTexture frame, Texture2D motionFrame)
+        private void OnNewFrame(Texture frame, Texture2D motionFrame)
         {
             var motionTextureSize = new Vector2Int(motionFrame.width, motionFrame.height);
             var targetZone = _zoneGetter.GetZone(motionTextureSize);
