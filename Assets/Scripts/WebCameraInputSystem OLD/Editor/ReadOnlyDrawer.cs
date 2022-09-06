@@ -1,7 +1,8 @@
-﻿using UnityEditor;
+﻿using WebCameraInputSystemOLD.Utils;
+using UnityEditor;
 using UnityEngine;
 
-namespace WebCameraInputSystem.Editor
+namespace WebCameraInputSystemOLD.Editor
 {
     [CustomPropertyDrawer(typeof(ReadOnlyAttribute))]
     public class ReadOnlyDrawer : PropertyDrawer

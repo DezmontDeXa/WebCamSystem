@@ -1,74 +1,61 @@
-﻿using WebCameraInputSystem.Utils;
 using UnityEngine.Events;
-using UnityEngine;
-using System.Linq;
 using UnityEngine.UI;
+using System.Linq;
+using UnityEngine;
 
 namespace WebCameraInputSystem
 {
-    [AddComponentMenu("WebCamera InputSystem/WebCamera")]
     public class WebCamera : MonoBehaviour
     {
         [SerializeField] private string _cameraName;
-        [SerializeField] private Vector2Int _requestedFrameSize = new Vector2Int(1920, 1080);
-        [SerializeField] private int _requestedFps = 30;
-        [SerializeField] private Vector2Int _detectFrameSize = new Vector2Int(192, 108);
-        [SerializeField] private int _detectFps = 10;
-        [SerializeField] private bool _flipY;
-        private float _prevTime = 0;
-        private WebCamTexture _webCamTexture;
-        private Texture2D _fullTexture;
-        private Texture2D _motionTexture;
+        [SerializeField] private Vector2Int _requestedResolution = new Vector2Int(1920, 1080);
+        [SerializeField] private int _requestedFps = 60;
+        [SerializeField] private bool _flipY = true;
+        [SerializeField] private Vector2Int _motionDetectorResolution = new Vector2Int(192, 108);
+        [SerializeField] private RawImage[] _targets;
+        private WebCamTexture _webCam;
+        private Texture2D _webCamTexture;
 
-        [SerializeField] private RawImage[] _rawImages;
-        public Texture FullTexture => _fullTexture;
-
-        public event UnityAction<Texture, Texture2D> OnNewFrame;
+        public event UnityAction<Texture2D, byte[]> TextureUpdated;
 
         private void Awake()
         {
-            Debug.Log("Cameras: " + string.Join("\r\n", WebCamTexture.devices.Select(x=>x.name)));
-
-            var cams = FindObjectsOfType<WebCamera>();
-            if (cams.Length > 1)
-                Debug.LogWarning("Recommended to use only one Web Camera on scene");
-            _motionTexture = new Texture2D(_detectFrameSize.x, _detectFrameSize.y);
-            _fullTexture = new Texture2D(_requestedFrameSize.x, _requestedFrameSize.y);
+            Debug.Log($"Devices: \r\n{string.Join("\r\n", WebCamTexture.devices.Select(x => x.name))}");
         }
 
         private void OnEnable()
         {
-            _webCamTexture = new WebCamTexture(_cameraName, _requestedFrameSize.x, _requestedFrameSize.y, _requestedFps);
-            foreach (var raw in _rawImages)
+            _webCam = new WebCamTexture(_cameraName, _requestedResolution.x, _requestedResolution.y, _requestedFps);
+            foreach (var img in _targets)
             {
-                raw.texture = _webCamTexture;
-                raw.material.mainTexture = _webCamTexture;
+                img.texture = _webCam;
+                img.material.mainTexture = _webCam;
+                if (_flipY)
+                {
+                    img.material.mainTextureOffset = new Vector2(1, 0);
+                    img.material.mainTextureScale = new Vector2(-1, 1);
+                }
             }
-
-            _webCamTexture.Play();
-            _prevTime = Time.timeSinceLevelLoad;
+            _webCam.Play();
         }
 
         private void OnDisable()
         {
-            _webCamTexture.Stop();
-            Destroy(_webCamTexture);
+            _webCam.Stop();
+            Destroy(_webCam);
         }
 
         private void Update()
         {
-            if (!_webCamTexture.isPlaying) return;
-            if (!_webCamTexture.didUpdateThisFrame) return;
-            if (Time.timeSinceLevelLoad - _prevTime < 1f / _detectFps) return;
-            _prevTime = Time.timeSinceLevelLoad;
-            PerformFrame();
-        }
+            if (_webCam.didUpdateThisFrame)
+            {
+                if (_webCamTexture == null)
+                    _webCamTexture = new Texture2D(_motionDetectorResolution.x, _motionDetectorResolution.y, TextureFormat.ARGB32, false);
 
-        private void PerformFrame()
-        {
-            Alg.Resize(_webCamTexture, _motionTexture, _flipY);
-            Alg.Resize(_webCamTexture, _fullTexture, _flipY);
-            OnNewFrame?.Invoke(_fullTexture, _motionTexture);
+                _webCam.ToTexture2D(ref _webCamTexture);
+                var bytes = _webCamTexture.GetRawTextureData();
+                TextureUpdated?.Invoke(_webCamTexture, bytes);
+            }
         }
     }
 }
