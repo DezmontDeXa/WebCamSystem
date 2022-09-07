@@ -1,16 +1,22 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Linq;
-using System;
 
 namespace WebCameraInputSystem
 {
     public static class Algo
     {
-        public static void ToTexture2D(this Texture original, ref Texture2D output)
+        public static void ToTexture2D(this Texture original, ref Texture2D output, bool flipY)
         {
-            var rt = RenderTexture.GetTemporary(original.width, original.height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default);
+            var rt = RenderTexture.GetTemporary(output.width, output.height, 32, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default);
             RenderTexture.active = rt;
-            Graphics.Blit(original, rt);
+
+            Graphics.Blit(
+                original,
+                rt,
+                new Vector2((flipY ? -1 : 1), 1), //(float)original.width/output.width    (float)original.height / output.height
+                new Vector2((flipY ? 1 : 0), 0));
+
             output.filterMode = FilterMode.Point;
             output.ReadPixels(new Rect(0.0f, 0.0f, output.width, output.height), 0, 0);
             output.Apply();
@@ -24,9 +30,9 @@ namespace WebCameraInputSystem
             for (var pixel = 0; pixel < result.Length; pixel++)
             {
                 var rawValue =
-                    (bytes[byteIndex + 0] * 0.21f) +
-                    (bytes[byteIndex + 1] * 0.72f) +
-                    (bytes[byteIndex + 2] * 0.07f);
+                    (bytes[byteIndex + 1] * 0.21f) +
+                    (bytes[byteIndex + 2] * 0.72f) +
+                    (bytes[byteIndex + 3] * 0.07f);
                 rawValue /= 255f;
 
                 result[pixel] = MathF.Round(rawValue, 2);

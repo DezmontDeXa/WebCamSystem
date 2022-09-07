@@ -16,6 +16,7 @@ namespace WebCameraInputSystem.Processing
         {
             _image = GetComponent<Image>();
         }
+
         private void Update()
         {
             if (_motionDetector.Difference > _motionThreshold)
@@ -23,6 +24,5 @@ namespace WebCameraInputSystem.Processing
             else
                 _image.color = _noMotionColor;
         }
-
     }
 }

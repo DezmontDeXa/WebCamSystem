@@ -8,17 +8,17 @@ namespace WebCameraInputSystem
     public class MotionDetector : MonoBehaviour
     {
         [SerializeField] private WebCamera _webCam;
-        [SerializeField] private RawImage _webCamImage;
-        [SerializeField] private RectTransform _zone;
-        [SerializeField, Range(0.01f, 1f)] private float _minPixelDiff;
+        [SerializeField, Range(0.01f, 1f)] private float _minPixelDiff = 0.05f;
         [SerializeField][ReadOnly] private float _difference;
         private RectTransform _canvasRectTransform;
         private float[] _background;
+        private RectTransform _zone;
 
         public float Difference => _difference;
 
         private void Awake()
         {
+            _zone = GetComponent<RectTransform>();
             _canvasRectTransform = _zone.GetComponentInParent<Canvas>().GetComponent<RectTransform>();
         }
 
@@ -50,9 +50,15 @@ namespace WebCameraInputSystem
         private void UpdateBackground(float[] grayscale)
         {
             if (_background == null)
+            {
                 _background = grayscale;
+                return;
+            }
             if (_background.Length != grayscale.Length)
+            {
                 _background = grayscale;
+                return;
+            }
             for (int i = 0; i < _background.Length; i++)
                 _background[i] = Algo.SquareMediateValue(_background[i], grayscale[i]);
         }
@@ -61,12 +67,10 @@ namespace WebCameraInputSystem
         {
             var bounds = GetRectTransformBounds(_zone);
             var canvasBounds = GetRectTransformBounds(_canvasRectTransform);
-
             var xMod = originalFrameSize.x / canvasBounds.size.x;
             var yMod = originalFrameSize.y / canvasBounds.size.y;
-
-            var x = (bounds.center.x - bounds.extents.x) * xMod;
-            var y = (bounds.center.y - bounds.extents.y) * yMod;
+            var x = (bounds.min.x) * xMod;
+            var y = (bounds.min.y) * yMod;
             var width = bounds.size.x * xMod;
             var height = bounds.size.y * yMod;
 
