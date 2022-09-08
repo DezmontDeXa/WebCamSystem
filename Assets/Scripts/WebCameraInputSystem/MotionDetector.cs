@@ -1,6 +1,6 @@
 using System;
 using UnityEngine;
-using UnityEngine.UI;
+using WebCameraInputSystem.Core;
 
 namespace WebCameraInputSystem
 {
@@ -24,12 +24,12 @@ namespace WebCameraInputSystem
 
         private void OnEnable()
         {
-            _webCam.TextureUpdated += TextureUpdated;
+            _webCam.OnMotionTextureUpdated += TextureUpdated;
         }
 
         private void OnDisable()
         {
-            _webCam.TextureUpdated -= TextureUpdated;
+            _webCam.OnMotionTextureUpdated -= TextureUpdated;
         }
 
         private void TextureUpdated(Texture2D texture, byte[] allBytes)

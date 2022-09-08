@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace WebCameraInputSystemOLD.Utils
+namespace WebCameraInputSystem.Core
 {
     public class ReadOnlyAttribute : PropertyAttribute
     {

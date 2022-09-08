@@ -2,7 +2,7 @@
 using UnityEngine;
 using System.Linq;
 
-namespace WebCameraInputSystem
+namespace WebCameraInputSystem.Core
 {
     public static class Algo
     {

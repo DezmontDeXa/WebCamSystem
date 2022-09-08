@@ -1,5 +1,6 @@
 ﻿using UnityEditor;
 using UnityEngine;
+using WebCameraInputSystem.Core;
 
 namespace WebCameraInputSystem.Editor
 {

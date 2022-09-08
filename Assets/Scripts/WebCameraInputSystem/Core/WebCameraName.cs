@@ -2,7 +2,7 @@
 using UnityEngine;
 using System;
 
-namespace WebCameraInputSystem
+namespace WebCameraInputSystem.Core
 {
     [Serializable]
     public class WebCameraName
