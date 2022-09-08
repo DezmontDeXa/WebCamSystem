@@ -6,9 +6,8 @@ namespace WebCamSystem.Processing
 {
     [RequireComponent(typeof(Image))]
     [AddComponentMenu("WebCamSystem/Processors/Button Motion Processor")]
-    public class ButtonMotionProcessor : MonoBehaviour
+    public class ButtonMotionProcessor : MotionProcessorBase
     {
-        [SerializeField] private MotionDetector _motionDetector;
         [SerializeField] protected float _motionThreshold = 0.01f;
         [SerializeField] private Color _hasMotionColor;
         [SerializeField] private Color _noMotionColor;
@@ -21,17 +20,15 @@ namespace WebCamSystem.Processing
             _image = GetComponent<Image>();
         }
 
-        private void Update()
+        protected override void OnDifferenceUpdated(float difference)
         {
-            if (_motionDetector.Difference > _motionThreshold)
+            if (difference > _motionThreshold)
             {
                 _image.color = _hasMotionColor;
                 OnCLick?.Invoke();
             }
             else
-            {
                 _image.color = _noMotionColor;
-            }        
         }
     }
 }

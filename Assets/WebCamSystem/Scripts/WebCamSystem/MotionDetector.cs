@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 using WebCamSystem.Core;
 
 namespace WebCamSystem
@@ -16,6 +17,8 @@ namespace WebCamSystem
         private RectTransform _zone;
 
         public float Difference => _difference;
+
+        public event UnityAction<float> OnDifferenceUpdated;
 
         private void Awake()
         {
@@ -39,6 +42,7 @@ namespace WebCamSystem
             var grayscale = Algo.GetGrayScaleFromBytes(zoneBytes);
             _difference = Algo.CalcDifference(grayscale, _background, _minPixelDiff);
             UpdateBackground(grayscale);
+            OnDifferenceUpdated?.Invoke(_difference);
         }
 
         private byte[] GetZoneBytes(byte[] allBytes, Vector2Int size)
