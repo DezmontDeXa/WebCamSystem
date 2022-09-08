@@ -15,10 +15,10 @@ namespace WebCamSystem
         {
             _image = GetComponent<RawImage>();
             _image.uvRect = _uV;
-            _webCamera.OnInitialized += WebCamera_OnInitialized;
+            Apply(_webCamera.FullTexture, _webCamera.FlipY);
         }
                 
-        private void WebCamera_OnInitialized(Texture texture, bool flipY)
+        private void Apply(Texture texture, bool flipY)
         {
             _image.texture = texture;
             _image.material.mainTexture = texture;

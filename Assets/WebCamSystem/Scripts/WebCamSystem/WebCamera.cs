@@ -17,7 +17,15 @@ namespace WebCamSystem
         private WebCamTexture _webCam;
         private Texture2D _motionTexture;
 
-        public event UnityAction<Texture, bool> OnInitialized;
+        public Texture FullTexture => _webCam;
+        public bool FlipY => _flipY;
+
+        public WebCameraName WebCameraName
+        {
+            get => _webCameraName; 
+            set => _webCameraName = value;
+        }
+
         public event UnityAction<Texture2D, byte[]> OnMotionTextureUpdated;
 
         private void OnEnable()
@@ -31,7 +39,6 @@ namespace WebCamSystem
                 _debugImage.uvRect = new Rect(0, 0, _flipY ? -1 : 1, 1);
             }
             _webCam.Play();
-            OnInitialized?.Invoke(_webCam, _flipY);
         }
 
         private void OnDisable()
