@@ -6,12 +6,12 @@ namespace WebCamSystem.Processing
     {
         [SerializeField] private MotionDetector _motionDetector;
 
-        private void OnEnable()
+        protected void OnEnable()
         {
             _motionDetector.OnDifferenceUpdated += OnDifferenceUpdated;
         }
 
-        private void OnDisable()
+        protected void OnDisable()
         {
             _motionDetector.OnDifferenceUpdated -= OnDifferenceUpdated;
         }

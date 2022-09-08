@@ -18,9 +18,10 @@ namespace WebCamSystem.Processing
             _image = GetComponent<Image>();
         }
 
-        private void OnEnable()
+        private new void OnEnable()
         {
             _image.fillAmount = 0;
+            base.OnEnable();
         }
 
         protected override void OnDifferenceUpdated(float difference)
@@ -30,7 +31,6 @@ namespace WebCamSystem.Processing
 
             if (_image.fillAmount >= 1f)
                 OnFilled?.Invoke();
-
         }
     }
 }
