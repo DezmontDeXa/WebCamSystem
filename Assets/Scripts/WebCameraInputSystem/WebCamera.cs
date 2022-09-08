@@ -16,13 +16,7 @@ namespace WebCameraInputSystem
         [SerializeField] private RawImage _debugImage;
         private WebCamTexture _webCam;
         private Texture2D _webCamTexture;
-        private string cameraName;
 
-        public string CameraName
-        {
-            get => cameraName;
-            set => cameraName = value;
-        }
 
         public event UnityAction<Texture2D, byte[]> TextureUpdated;
 
